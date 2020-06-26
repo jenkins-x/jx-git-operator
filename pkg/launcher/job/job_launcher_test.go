@@ -67,5 +67,5 @@ func TestJobLauncher(t *testing.T) {
 	// we should not recreate the Job if we try to launch again as it already exists
 	objects, err = client.Launch(o)
 	require.NoError(t, err, "failed to launch the job")
-	require.Len(t, objects, 0, "should have created one runtime.Object after launching")
+	require.Len(t, objects, 0, "should not have a created a runtime.Object as we already have one for the commit sha")
 }
