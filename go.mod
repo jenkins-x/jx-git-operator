@@ -17,14 +17,19 @@ require (
 )
 
 replace (
-	contrib.go.opencensus.io/exporter/stackdriver => contrib.go.opencensus.io/exporter/stackdriver v0.12.9-0.20191108183826-59d068f8d8ff
-	github.com/Azure/go-autorest => github.com/Azure/go-autorest v13.3.1+incompatible
+	// contrib.go.opencensus.io/exporter/stackdriver => contrib.go.opencensus.io/exporter/stackdriver v0.12.9-0.20191108183826-59d068f8d8ff
+	// github.com/Azure/go-autorest => github.com/Azure/go-autorest v13.3.1+incompatible
 
 	github.com/spf13/cobra => github.com/chmouel/cobra v0.0.0-20200107083527-379e7a80af0c
-	k8s.io/api => k8s.io/api v0.16.5
-	k8s.io/apimachinery => k8s.io/apimachinery v0.16.5
+
+	k8s.io/api => k8s.io/api v0.17.2
+	k8s.io/apimachinery => k8s.io/apimachinery v0.17.2
 	k8s.io/client-go => k8s.io/client-go v0.16.5
-	k8s.io/gengo => k8s.io/gengo v0.0.0-20190327210449-e17681d19d3a
-	knative.dev/pkg => knative.dev/pkg v0.0.0-20200113182502-b8dc5fbc6d2f
+
+// k8s.io/api => k8s.io/api v0.16.5
+// k8s.io/apimachinery => k8s.io/apimachinery v0.16.5
+// k8s.io/client-go => k8s.io/client-go v0.16.5
+// k8s.io/gengo => k8s.io/gengo v0.0.0-20190327210449-e17681d19d3a
+// knative.dev/pkg => knative.dev/pkg v0.0.0-20200113182502-b8dc5fbc6d2f
 
 )
