@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+spec:
+  backoffLimit: 4
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      containers:
+      - args:
+        - -c
+        - "echo hello world"
+        command:
+        - /bin/sh
+        env:
+        - name: HOME
+          value: /home
+        image: gcr.io/jenkinsxio-labs-private/jxl:0.0.205
+        imagePullPolicy: Always
+        name: job
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      serviceAccountName: tekton-bot
+      terminationGracePeriodSeconds: 30

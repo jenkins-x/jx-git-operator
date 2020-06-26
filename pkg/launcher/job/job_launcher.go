@@ -6,11 +6,11 @@ import (
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
+	"github.com/jenkins-x/jx-helpers/pkg/files"
+	"github.com/jenkins-x/jx-helpers/pkg/kube/naming"
 	"github.com/jenkins-x/jx-helpers/pkg/yamls"
 	"github.com/jenkins-x/jx-kube-client/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/pkg/log"
-	"github.com/jenkins-x/jx/v2/pkg/kube/naming"
-	"github.com/jenkins-x/jx/v2/pkg/util"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/batch/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -94,7 +94,7 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
 	fileName := filepath.Join(opts.Dir, ".jx", "git-operator", "job.yaml")
-	exists, err := util.FileExists(fileName)
+	exists, err := files.FileExists(fileName)
 	if err != nil {
 		return errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
 	}
@@ -109,10 +109,10 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	}
 
 	// lets try use a maximum of 31 characters and a minimum of 10 for the sha
-	namePrefix := safeName[0:20]
+	namePrefix := trimLength(safeName, 20)
 	maxShaLen := 30 - len(namePrefix)
 
-	resourceName := namePrefix + "-" + safeSha[0:maxShaLen]
+	resourceName := namePrefix + "-" + trimLength(safeSha, maxShaLen)
 	resource.Name = resourceName
 
 	if resource.Labels == nil {
@@ -128,4 +128,11 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	}
 	log.Logger().Infof("created Job %s in namespace %s", resourceName, ns)
 	return nil
+}
+
+func trimLength(text string, length int) string {
+	if len(text) <= length {
+		return text
+	}
+	return text[0:length]
 }

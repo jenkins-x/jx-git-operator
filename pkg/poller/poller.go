@@ -12,13 +12,12 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo/secret"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
+	"github.com/jenkins-x/jx-helpers/pkg/files"
 	"github.com/jenkins-x/jx-helpers/pkg/gitclient"
 	"github.com/jenkins-x/jx-helpers/pkg/gitclient/cli"
 	"github.com/jenkins-x/jx-logging/pkg/log"
 	"github.com/pkg/errors"
 	"k8s.io/client-go/kubernetes"
-
-	"github.com/jenkins-x/jx/v2/pkg/util"
 )
 
 // Options the configuration options for the poller
@@ -89,7 +88,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	log.Logger().Infof("polling repository %s in namespace %s with git URL %s", name, r.Namespace, r.GitURL)
 
 	dir := filepath.Join(o.Dir, name)
-	exists, err := util.DirExists(dir)
+	exists, err := files.DirExists(dir)
 	if err != nil {
 		return errors.Wrapf(err, "failed to check dir exists %s", dir)
 	}
