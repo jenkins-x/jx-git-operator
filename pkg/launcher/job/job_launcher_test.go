@@ -9,6 +9,7 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/stretchr/testify/require"
+	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
@@ -47,6 +48,13 @@ func TestJobLauncher(t *testing.T) {
 		GitSHA: gitSha,
 		Dir:    filepath.Join("test_data", "somerepo"),
 	}
-	err = client.Launch(o)
+	objects, err := client.Launch(o)
 	require.NoError(t, err, "failed to launch the job")
+	require.Len(t, objects, 1, "should have created one runtime.Object after launching")
+
+	o1 := objects[0]
+	j1, ok := o1.(*v1.Job)
+	require.True(t, ok, "could not convert object %#v to a Job")
+
+	t.Logf("created Job with name %s", j1.Name)
 }

@@ -115,7 +115,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		return errors.Errorf("could not find latest commit sha for repository %s", name)
 	}
 
-	err = o.Launcher.Launch(launcher.LaunchOptions{
+	_, err = o.Launcher.Launch(launcher.LaunchOptions{
 		Repository: r,
 		GitSHA:     text,
 		Dir:        dir,

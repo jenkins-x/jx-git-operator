@@ -12,6 +12,8 @@ import (
 	"github.com/jenkins-x/jx-kube-client/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/pkg/log"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/runtime"
+
 	v1 "k8s.io/api/batch/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -55,7 +57,7 @@ func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string) (l
 }
 
 // Launch launches a job for the given commit
-func (c *client) Launch(opts launcher.LaunchOptions) error {
+func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	ns := opts.Repository.Namespace
 	if ns == "" {
 		ns = c.ns
@@ -73,7 +75,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) error {
 		err = nil
 	}
 	if err != nil {
-		return errors.Wrapf(err, "failed to find Jobs in namespace %s with selector %s", ns, selector)
+		return nil, errors.Wrapf(err, "failed to find Jobs in namespace %s with selector %s", ns, selector)
 	}
 
 	for _, r := range list.Items {
@@ -86,26 +88,26 @@ func (c *client) Launch(opts launcher.LaunchOptions) error {
 		return c.startNewJob(opts, jobInterface, ns, safeName, safeSha)
 	}
 
-	return nil
+	return nil, nil
 }
 
 // startNewJob lets create a new Job resource
-func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) error {
+func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
 	fileName := filepath.Join(opts.Dir, ".jx", "git-operator", "job.yaml")
 	exists, err := files.FileExists(fileName)
 	if err != nil {
-		return errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
+		return nil, errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
 	}
 	if !exists {
-		return errors.Errorf("repository %s does not have a Job file: %s", safeName, fileName)
+		return nil, errors.Errorf("repository %s does not have a Job file: %s", safeName, fileName)
 	}
 
 	resource := &v1.Job{}
 	err = yamls.LoadFile(fileName, resource)
 	if err != nil {
-		return errors.Wrapf(err, "failed to load Job file %s in repository %s", fileName, safeName)
+		return nil, errors.Wrapf(err, "failed to load Job file %s in repository %s", fileName, safeName)
 	}
 
 	// lets try use a maximum of 31 characters and a minimum of 10 for the sha
@@ -122,12 +124,12 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	resource.Labels[launcher.RepositoryLabelKey] = safeName
 	resource.Labels[launcher.CommitShaLabelKey] = safeSha
 
-	_, err = jobInterface.Create(resource)
+	r2, err := jobInterface.Create(resource)
 	if err != nil {
-		return errors.Wrapf(err, "failed to create Job %s in namespace %s", resourceName, ns)
+		return nil, errors.Wrapf(err, "failed to create Job %s in namespace %s", resourceName, ns)
 	}
 	log.Logger().Infof("created Job %s in namespace %s", resourceName, ns)
-	return nil
+	return []runtime.Object{r2}, nil
 }
 
 func trimLength(text string, length int) string {

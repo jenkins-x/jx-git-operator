@@ -1,6 +1,10 @@
 package launcher
 
-import "github.com/jenkins-x/jx-git-operator/pkg/repo"
+import (
+	"github.com/jenkins-x/jx-git-operator/pkg/repo"
+	"k8s.io/apimachinery/pkg/runtime"
+
+)
 
 // LaunchOptions the options for launching a new Job/Task/Pipeline for a git repository
 type LaunchOptions struct {
@@ -16,7 +20,9 @@ type LaunchOptions struct {
 
 // Interface the interface for launching Jobs/Tasks when there is a git commit in a repository
 type Interface interface {
-	// Launch lauches a new Job/Task/Pipeline for the given repository if there has been a git commit
+	// Launch launches a new Job/Task/Pipeline for the given repository if there has been a git commit
 	// since the last
-	Launch(opts LaunchOptions) error
+	Launch(opts LaunchOptions) ([]runtime.Object, error)
 }
+
+
