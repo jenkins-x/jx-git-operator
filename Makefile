@@ -41,6 +41,15 @@ build:
 
 release: build test
 
+.PHONY: release
+release: clean linux test
+
+release-all: release linux win darwin
+
+.PHONY: goreleaser
+goreleaser:
+	step-go-releaser --organisation=$(ORG) --revision=$(REV) --branch=$(BRANCH) --build-date=$(BUILD_DATE) --go-version=$(GO_VERSION) --root-package=$(ROOT_PACKAGE) --version=$(VERSION)
+
 fmt:
 	go fmt ./...
 
@@ -66,10 +75,6 @@ make-reports-dir:
 linux: ## Build for Linux
 	CGO_ENABLED=$(CGO_ENABLED) GOOS=linux GOARCH=amd64 $(GO) $(BUILD_TARGET) $(BUILDFLAGS) -o build/linux/$(NAME) $(MAIN_SRC_FILE)
 	chmod +x build/linux/$(NAME)
-
-.PHONY: goreleaser
-goreleaser:
-	step-go-releaser --organisation=$(ORG) --revision=$(REV) --branch=$(BRANCH) --build-date=$(BUILD_DATE) --root-package=$(ROOT_PACKAGE) --go-version=$(GO_VERSION) --version=$(VERSION)
 
 .PHONY: clean
 clean: ## Clean the generated artifacts
