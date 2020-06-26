@@ -1,20 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "jx-git-operator.name" . }}
   labels:
     draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
   selector:
     matchLabels:
-      app: {{ template "fullname" . }}
+      app: {{ template "jx-git-operator.name" . }}
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
       labels:
-        draft: {{ default "draft-app" .Values.draft }}
-        app: {{ template "fullname" . }}
+        app: {{ template "jx-git-operator.name" . }}
 {{- if .Values.podAnnotations }}
       annotations:
 {{ toYaml .Values.podAnnotations | indent 8 }}
@@ -36,4 +35,4 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
-      serviceAccountName: "{{ .Values.serviceAccount }}
+      serviceAccountName: "{{ .Values.serviceAccount.name | default "jx-git-operator" }}"

@@ -3,7 +3,14 @@ image:
   tag: "latest"
   pullPolicy: IfNotPresent
 
-serviceAccount: "jx-git-operator"
+rbac:
+  # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
+  cluster: true
+
+serviceAccount:
+  name: "jx-git-operator"
+  # a map of annotations to add to the ServiceAccount
+  annotations: {}
 
 # define environment variables here as a map of key: value
 env: {}

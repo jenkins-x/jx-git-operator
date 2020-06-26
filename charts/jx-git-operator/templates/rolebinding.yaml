@@ -1,0 +1,14 @@
+{{- if not .Values.rbac.cluster }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name:  {{ template "jx-git-operator.name" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "jx-git-operator.name" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name:  {{ template "jx-git-operator.name" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}
