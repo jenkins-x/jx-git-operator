@@ -9,7 +9,7 @@ builds:
   - id: jx-alpha-promote-linux
     # Path to main.go file or main package.
     # Default is `.`.
-    main: ./cmd/main.go
+    main: ./main.go
 
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
@@ -19,7 +19,7 @@ builds:
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
     ldflags:
-      - -X "github.com/jenkins-x/jx-promote/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
+      - -X "github.com/jenkins-x/jx-git-operator/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
 
     # GOOS list to build for.
     # For more info refer to: https://golang.org/doc/install/source#environment
@@ -36,7 +36,7 @@ builds:
   - id: jx-alpha-promote-amd64
     # Path to main.go file or main package.
     # Default is `.`.
-    main: ./cmd/main.go
+    main: ./main.go
 
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
@@ -46,7 +46,7 @@ builds:
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
     ldflags:
-     - -X "github.com/jenkins-x/jx-promote/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
+     - -X "github.com/jenkins-x/jx-git-operator/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
 
     # GOOS list to build for.
     # For more info refer to: https://golang.org/doc/install/source#environment
@@ -63,7 +63,7 @@ builds:
   - id: jx-alpha-promote-windows-amd64
     # Path to main.go file or main package.
     # Default is `.`.
-    main: ./cmd/main.go
+    main: ./main.go
 
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
@@ -73,7 +73,7 @@ builds:
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
     ldflags:
-     - -X "github.com/jenkins-x/jx-promote/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
+     - -X "github.com/jenkins-x/jx-git-operator/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Version={{.Env.VERSION}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Revision={{.Env.REV}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.Branch={{.Env.BRANCH}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.BuildDate={{.Env.BUILDDATE}}" -X "{{.Env.ROOTPACKAGE}}/pkg/version.GoVersion={{.Env.GOVERSION}}"
 
     # GOOS list to build for.
     # For more info refer to: https://golang.org/doc/install/source#environment

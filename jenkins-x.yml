@@ -17,6 +17,10 @@ pipelineConfig:
                 command: /kaniko/executor --cache=true --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=gcr.io/$DOCKER_REGISTRY_ORG/jx-git-operator:$VERSION --cache-repo=gcr.io/jx-labs-infra/cache
               - name: changelog
                 command: jx step changelog --verbose --header-file=hack/changelog-header.md --version=$VERSION --rev=$PULL_BASE_SHA --output-markdown=changelog.md --update-release=false
+              - name: release-chart
+                command: make release
+                image: gcr.io/jenkinsxio-labs/helm:0.0.21
+                dir: /workspace/source/charts/jx-git-operator
               - name: upload-binaries
                 command: make goreleaser
                 image: gcr.io/jenkinsxio-labs/go-releaser:0.0.18

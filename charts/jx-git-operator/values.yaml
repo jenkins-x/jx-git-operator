@@ -1,0 +1,20 @@
+image:
+  repository: gcr.io/jenkinsxio-labs/jx-git-operator
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+serviceAccount: "jx-git-operator"
+
+# define environment variables here as a map of key: value
+env: {}
+
+# a map of annotations to add to the pod
+podAnnotations: {}
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 80m
+    memory: 128Mi
