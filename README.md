@@ -28,7 +28,7 @@ The git repository you wish to boot needs to have the `.jx/git-operator/job.yaml
 
 ### Create the Git URL Secret
 
-You need to create a `Secret` to map the git reopsitory to the `jx-git-operator`. 
+You need to create a `Secret` to map the git repository to the `jx-git-operator`. 
 
 For private repositories this will also need a username and token/password to be able to clone the git repository.
 
