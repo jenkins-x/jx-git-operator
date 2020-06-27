@@ -32,11 +32,11 @@ type Options struct {
 	// KubeClient is used to lazy create the repo client and launcher
 	KubeClient kubernetes.Interface
 
-	Dir          string
-	Namespace    string
-	GitBinary    string
-	PollDuration time.Duration
-	NoLoop       bool
+	Dir          string        `env:"WORK_DIR"`
+	Namespace    string        `env:"NAMESPACE"`
+	GitBinary    string        `env:"GIT_BINARY"`
+	PollDuration time.Duration `env:"POLL_DURATION"`
+	NoLoop       bool          `env:"NO_LOOP"`
 }
 
 // Run polls for git changes
@@ -46,6 +46,13 @@ func (o *Options) Run() error {
 		return errors.Wrap(err, "invalid options")
 	}
 
+	if o.Namespace != "" {
+		log.Logger().Infof("looking in namespace %s for Secret resources with selector %s", o.Namespace, constants.DefaultSelector)
+	}
+
+	if !o.NoLoop {
+		log.Logger().Infof("using poll duration %s", o.PollDuration.String())
+	}
 	for {
 		err = o.Poll()
 		if err != nil {

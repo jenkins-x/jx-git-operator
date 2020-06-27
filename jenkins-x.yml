@@ -23,7 +23,7 @@ pipelineConfig:
                 dir: /workspace/source/charts/jx-git-operator
               - name: upload-binaries
                 command: make goreleaser
-                image: gcr.io/jenkinsxio-labs/go-releaser:0.0.18
+                image: gcr.io/jenkinsxio-labs-private/step-go-releaser:0.0.5
 #              - name: copy-to-bucket
 #                command: gsutil cp dist/*.gz dist/*.zip gs://cloudbees-jx-project-plugin/plugin/${VERSION}
 #                image: gcr.io/jenkinsxio-labs-private/jxl
