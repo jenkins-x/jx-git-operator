@@ -19,7 +19,9 @@ serviceAccount:
   annotations: {}
 
 # define environment variables here as a map of key: value
-env: {}
+env:
+  # how frequently to poll git
+  POLL_DURATION: "20s"
 
 # define environment variables from here as a map of key: value
 envFrom: []
