@@ -22,7 +22,7 @@ serviceAccount:
 env: {}
 
 # define environment variables from here as a map of key: value
-envFrom: {}
+envFrom: []
 
 # a map of annotations to add to the pod
 podAnnotations: {}
