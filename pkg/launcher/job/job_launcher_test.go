@@ -8,6 +8,7 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
+	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/batch/v1"
@@ -21,6 +22,9 @@ func TestJobLauncher(t *testing.T) {
 	repoName := "fake-repository"
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
+
+	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", ".jx", "git-operator", "resources"))
+	require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
 
 	kubeClient := fake.NewSimpleClientset(
 		&corev1.Secret{
@@ -36,8 +40,9 @@ func TestJobLauncher(t *testing.T) {
 			},
 		},
 	)
+	runner := &fakerunner.FakeRunner{}
 
-	client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector)
+	client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector, runner.Run)
 	require.NoError(t, err, "failed to create launcher client")
 
 	o := launcher.LaunchOptions{
@@ -63,6 +68,12 @@ func TestJobLauncher(t *testing.T) {
 	testhelpers.AssertLabel(t, constants.DefaultSelectorKey, constants.DefaultSelectorValue, j1.ObjectMeta, msg)
 	testhelpers.AssertLabel(t, launcher.RepositoryLabelKey, repoName, j1.ObjectMeta, msg)
 	testhelpers.AssertLabel(t, launcher.CommitShaLabelKey, gitSha, j1.ObjectMeta, msg)
+
+	runner.ExpectResults(t,
+		fakerunner.FakeResult{
+			CLI: "kubectl apply -f " + resourcesDir,
+		},
+	)
 
 	// we should not recreate the Job if we try to launch again as it already exists
 	objects, err = client.Launch(o)

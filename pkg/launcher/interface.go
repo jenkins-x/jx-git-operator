@@ -3,7 +3,6 @@ package launcher
 import (
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"k8s.io/apimachinery/pkg/runtime"
-
 )
 
 // LaunchOptions the options for launching a new Job/Task/Pipeline for a git repository
@@ -24,5 +23,3 @@ type Interface interface {
 	// since the last
 	Launch(opts LaunchOptions) ([]runtime.Object, error)
 }
-
-

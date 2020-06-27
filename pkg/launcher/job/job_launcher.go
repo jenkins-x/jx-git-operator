@@ -6,6 +6,7 @@ import (
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
+	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/pkg/files"
 	"github.com/jenkins-x/jx-helpers/pkg/kube/naming"
 	"github.com/jenkins-x/jx-helpers/pkg/yamls"
@@ -25,11 +26,12 @@ type client struct {
 	kubeClient kubernetes.Interface
 	ns         string
 	selector   string
+	runner     cmdrunner.CommandRunner
 }
 
 // NewLauncher creates a new launcher for Jobs using the given kubernetes client and namespace
 // if nil is passed in the kubernetes client will be lazily created
-func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string) (launcher.Interface, error) {
+func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string, runner cmdrunner.CommandRunner) (launcher.Interface, error) {
 	if kubeClient == nil {
 		f := kubeclient.NewFactory()
 		cfg, err := f.CreateKubeConfig()
@@ -49,10 +51,14 @@ func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string) (l
 			}
 		}
 	}
+	if runner == nil {
+		runner = cmdrunner.DefaultCommandRunner
+	}
 	return &client{
 		kubeClient: kubeClient,
 		ns:         ns,
 		selector:   selector,
+		runner:     runner,
 	}, nil
 }
 
@@ -95,7 +101,8 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
-	fileName := filepath.Join(opts.Dir, ".jx", "git-operator", "job.yaml")
+	folder := filepath.Join(opts.Dir, ".jx", "git-operator")
+	fileName := filepath.Join(folder, "job.yaml")
 	exists, err := files.FileExists(fileName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
@@ -108,6 +115,29 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	err = yamls.LoadFile(fileName, resource)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to load Job file %s in repository %s", fileName, safeName)
+	}
+
+	// now lets check if there is a resources dir
+	resourcesDir := filepath.Join(folder, "resources")
+	exists, err = files.DirExists(resourcesDir)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to check if resources directory %s exists in repository %s", resourcesDir, safeName)
+	}
+	if exists {
+		absDir, err := filepath.Abs(resourcesDir)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to get absolute resources dir %s", resourcesDir)
+		}
+
+		cmd := &cmdrunner.Command{
+			Name: "kubectl",
+			Args: []string{"apply", "-f", absDir},
+		}
+		log.Logger().Infof("running command: %s", cmd.CLI())
+		_, err = c.runner(cmd)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to apply resources in dir %s", absDir)
+		}
 	}
 
 	// lets try use a maximum of 31 characters and a minimum of 10 for the sha

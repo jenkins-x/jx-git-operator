@@ -142,7 +142,7 @@ func (o *Options) validateOptions() error {
 		}
 	}
 	if o.Launcher == nil {
-		o.Launcher, err = job.NewLauncher(o.KubeClient, o.Namespace, constants.DefaultSelector)
+		o.Launcher, err = job.NewLauncher(o.KubeClient, o.Namespace, constants.DefaultSelector, o.CommandRunner)
 		if err != nil {
 			return errors.Wrapf(err, "failed to create launcher")
 		}
