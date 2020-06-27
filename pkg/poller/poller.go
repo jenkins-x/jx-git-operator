@@ -128,7 +128,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 
 // validateOptions validates the options and lazily creates any resources required
 func (o *Options) validateOptions() error {
-	if o.PollDuration.Microseconds() == int64(0) {
+	if o.PollDuration.Milliseconds() == int64(0) {
 		o.PollDuration = time.Second * 30
 	}
 	if o.GitClient == nil {
