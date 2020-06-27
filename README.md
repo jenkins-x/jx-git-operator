@@ -21,6 +21,8 @@ Then use helm to install/upgrade:
 helm repo add jx-labs https://storage.googleapis.com/jenkinsxio-labs-private/charts
 helm upgrade jxgo jx-labs/jx-git-operator
 ```
+
+You can configure the git polling frequency via the `env.POLL_DURATION` property which supports go `time.Duration` syntax such as `10m` or `40s`
  
 ### Setting up a repository
 
