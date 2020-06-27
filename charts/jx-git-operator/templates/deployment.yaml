@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: {{ template "jx-git-operator.name" . }}
   labels:
-    draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
   selector:

@@ -7,13 +7,22 @@ rbac:
   # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
   cluster: true
 
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
 serviceAccount:
+  create: true
   name: "jx-git-operator"
   # a map of annotations to add to the ServiceAccount
   annotations: {}
 
 # define environment variables here as a map of key: value
 env: {}
+
+# define environment variables from here as a map of key: value
+envFrom: {}
 
 # a map of annotations to add to the pod
 podAnnotations: {}
@@ -25,3 +34,5 @@ resources:
   requests:
     cpu: 80m
     memory: 128Mi
+
+terminationGracePeriodSeconds: 30
