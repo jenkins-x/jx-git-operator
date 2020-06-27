@@ -39,7 +39,7 @@ kubectl create secret generic jx-git-operator-boot --from-literal=url=https://my
 kubectl label secret jx-git-operator-boot git-operator.jenkins.io/kind=git-operator
 ```
 
-### Viewing the logs
+### Viewing the logs
 
 To see the logs of the operator try:
 
