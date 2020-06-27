@@ -1,6 +1,7 @@
 package poller_test
 
 import (
+	"io/ioutil"
 	"path/filepath"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/poller"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner/fakerunner"
+	"github.com/jenkins-x/jx-helpers/pkg/files"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,9 +17,6 @@ import (
 )
 
 func TestPoller(t *testing.T) {
-	// TODO
-	t.SkipNow()
-
 	ns := "jx"
 	repoName := "fake-repository"
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
@@ -26,6 +25,14 @@ func TestPoller(t *testing.T) {
 	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", ".jx", "git-operator", "resources"))
 	require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
 
+	tmpDir, err := ioutil.TempDir("", "test-jx-git-operator-")
+	require.NoError(t, err, "failed to create temp dir")
+
+	t.Logf("running in dir %s", tmpDir)
+
+	// lets copy the dummy git clone to the temp dir
+	err = files.CopyDirOverwrite(filepath.Join("test_data",  repoName), filepath.Join(tmpDir, repoName))
+	require.NoError(t, err, "failed to copy git clone data to temp dir")
 
 	kubeClient := fake.NewSimpleClientset(
 		&corev1.Secret{
@@ -50,10 +57,11 @@ func TestPoller(t *testing.T) {
 		},
 	}
 
+
 	p := &poller.Options{
 		CommandRunner: runner.Run,
 		KubeClient:    kubeClient,
-		Dir:           "",
+		Dir:           tmpDir,
 		Namespace:     ns,
 		NoLoop:        true,
 	}

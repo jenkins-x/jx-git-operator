@@ -6,7 +6,7 @@ before:
     - go mod download
 
 builds:
-  - id: jx-alpha-promote-linux
+  - id: jx-git-operator-linux
     # Path to main.go file or main package.
     # Default is `.`.
     main: ./main.go
@@ -14,7 +14,7 @@ builds:
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
     # Default is the name of the project directory.
-    binary: jx-alpha-promote
+    binary: jx-git-operator
 
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
@@ -33,7 +33,7 @@ builds:
     goarch:
       - amd64
 
-  - id: jx-alpha-promote-amd64
+  - id: jx-git-operator-amd64
     # Path to main.go file or main package.
     # Default is `.`.
     main: ./main.go
@@ -41,7 +41,7 @@ builds:
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
     # Default is the name of the project directory.
-    binary: jx-alpha-promote
+    binary: jx-git-operator
 
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
@@ -60,7 +60,7 @@ builds:
     goarch:
       - amd64
 
-  - id: jx-alpha-promote-windows-amd64
+  - id: jx-git-operator-windows-amd64
     # Path to main.go file or main package.
     # Default is `.`.
     main: ./main.go
@@ -68,7 +68,7 @@ builds:
     # Binary name.
     # Can be a path (e.g. `bin/app`) to wrap the binary in a directory.
     # Default is the name of the project directory.
-    binary: jx-alpha-promote
+    binary: jx-git-operator
 
     # Custom ldflags templates.
     # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
@@ -88,15 +88,15 @@ builds:
       - amd64
 
 archives:
-  - name_template: "jx-alpha-promote-{{ .Os }}-{{ .Arch }}"
+  - name_template: "jx-git-operator-{{ .Os }}-{{ .Arch }}"
     format_overrides:
       - goos: windows
         format: zip
 
 checksum:
   # You can change the name of the checksums file.
-  # Default is `jx-alpha-promote_{{ .Version }}_checksums.txt`.
-  name_template: "jx-alpha-promote-checksums.txt"
+  # Default is `jx-git-operator_{{ .Version }}_checksums.txt`.
+  name_template: "jx-git-operator-checksums.txt"
 
   # Algorithm to be used.
   # Accepted options are sha256, sha512, sha1, crc32, md5, sha224 and sha384.
