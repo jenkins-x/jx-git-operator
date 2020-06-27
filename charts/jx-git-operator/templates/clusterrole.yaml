@@ -1,6 +1,6 @@
 {{- if .Values.rbac.cluster }}
-kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
   name: {{ template "jx-git-operator.name" . }}
 rules:

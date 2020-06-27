@@ -5,7 +5,7 @@ metadata:
   name:  {{ template "jx-git-operator.name" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ template "jx-git-operator.name" . }}
+    name: "{{ .Values.serviceAccount.name | default "jx-git-operator" }}"
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
