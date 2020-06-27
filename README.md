@@ -16,3 +16,12 @@ For private repositories this will also need a username and token/password to be
 kubectl create secret generic jx-git-operator-boot --from-literal=url=https://myusername:mytoken@github.com/myowner/myrepo.git
 kubectl label secret jx-git-operator-boot git-operator.jenkins.io/kind=git-operator
 ```
+
+
+### Running 
+
+You can run the `jx-git-operator` locally on the command line if you want. All jobs are triggered as Kubernetes Jobs; it is just the git polling which runs locally.
+
+Download the [x-git-operator binary](https://github.com/jenkins-x/x-git-operator/releases) for your operating system and add it to your `$PATH`.
+
+There will be an `app` you can install soon too...
