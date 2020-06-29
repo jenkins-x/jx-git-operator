@@ -1,0 +1,40 @@
+---
+# Source: jx-git-operator/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jx-git-operator
+  labels:
+    chart: "jx-git-operator-0.0.45"
+spec:
+  selector:
+    matchLabels:
+      app: jx-git-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jx-git-operator
+    spec:
+      containers:
+      - name: jx-git-operator
+        image: "gcr.io/jenkinsxio-labs-private/jx-git-operator:0.0.45"
+        imagePullPolicy: IfNotPresent
+        command:
+        - "jx-git-operator"
+        env:
+        - name: POLL_DURATION
+          value: "20s"
+        - name: NO_RESOURCE_APPLY
+          value: "true"
+        envFrom:
+          []
+        resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 80m
+              memory: 128Mi
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: "jx-git-operator"

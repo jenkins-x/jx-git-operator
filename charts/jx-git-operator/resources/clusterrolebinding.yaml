@@ -1,0 +1,14 @@
+---
+# Source: jx-git-operator/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name:  jx-git-operator
+subjects:
+  - kind: ServiceAccount
+    name: "jx-git-operator"
+    namespace: jx
+roleRef:
+  kind: ClusterRole
+  name:  jx-git-operator
+  apiGroup: rbac.authorization.k8s.io
