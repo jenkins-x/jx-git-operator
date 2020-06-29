@@ -15,6 +15,9 @@ type LaunchOptions struct {
 
 	// 	Dir the root directory of the git clone of the repository
 	Dir string
+
+	// NoResourceApply if specified disable applying resources found in `.jx/git-operator/resources/*.yaml`
+	NoResourceApply bool
 }
 
 // Interface the interface for launching Jobs/Tasks when there is a git commit in a repository

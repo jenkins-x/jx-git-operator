@@ -29,6 +29,10 @@ spec:
         - name: {{ $pkey }}
           value: {{ quote $pval }}
 {{- end }}
+{{- if not .Values.rbac.strict }}
+        - name: NO_RESOURCE_APPLY
+          value: "true"
+{{- end }}
         envFrom:
 {{ toYaml .Values.envFrom | indent 10 }}
         resources:

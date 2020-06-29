@@ -117,26 +117,28 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 		return nil, errors.Wrapf(err, "failed to load Job file %s in repository %s", fileName, safeName)
 	}
 
-	// now lets check if there is a resources dir
-	resourcesDir := filepath.Join(folder, "resources")
-	exists, err = files.DirExists(resourcesDir)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to check if resources directory %s exists in repository %s", resourcesDir, safeName)
-	}
-	if exists {
-		absDir, err := filepath.Abs(resourcesDir)
+	if !opts.NoResourceApply {
+		// now lets check if there is a resources dir
+		resourcesDir := filepath.Join(folder, "resources")
+		exists, err = files.DirExists(resourcesDir)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to get absolute resources dir %s", resourcesDir)
+			return nil, errors.Wrapf(err, "failed to check if resources directory %s exists in repository %s", resourcesDir, safeName)
 		}
+		if exists {
+			absDir, err := filepath.Abs(resourcesDir)
+			if err != nil {
+				return nil, errors.Wrapf(err, "failed to get absolute resources dir %s", resourcesDir)
+			}
 
-		cmd := &cmdrunner.Command{
-			Name: "kubectl",
-			Args: []string{"apply", "-f", absDir},
-		}
-		log.Logger().Infof("running command: %s", cmd.CLI())
-		_, err = c.runner(cmd)
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to apply resources in dir %s", absDir)
+			cmd := &cmdrunner.Command{
+				Name: "kubectl",
+				Args: []string{"apply", "-f", absDir},
+			}
+			log.Logger().Infof("running command: %s", cmd.CLI())
+			_, err = c.runner(cmd)
+			if err != nil {
+				return nil, errors.Wrapf(err, "failed to apply resources in dir %s", absDir)
+			}
 		}
 	}
 

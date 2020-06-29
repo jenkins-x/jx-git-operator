@@ -23,7 +23,13 @@ helm install jxgo jx-labs/jx-git-operator
 ```
 
 You can configure the git polling frequency via the `env.POLL_DURATION` property which supports go `time.Duration` syntax such as `10m` or `40s`
- 
+
+The chart defaults to using a `cluster-admin` role so it can create `Job` resources in any namespace along with any associated resources specified in a git repository at `.jx/git-operator/resources/*.yaml`
+
+You can enable strict mode which only requires roles to read `Secret` resources in the namespace its installed and list/create `Job` resources via the `rbac.strict = true`. 
+
+Also to avoid cluster roles use `rbac.cluster = false` which only uses a `Role` and `RoleBinding` in the install namespace.
+
 ### Setting up a repository
 
 The git repository you wish to boot needs to have the `.jx/git-operator/job.yaml` defined to specify the Kubernetes `Job` to perform the boot job.

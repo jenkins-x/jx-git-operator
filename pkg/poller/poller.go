@@ -32,11 +32,12 @@ type Options struct {
 	// KubeClient is used to lazy create the repo client and launcher
 	KubeClient kubernetes.Interface
 
-	Dir          string        `env:"WORK_DIR"`
-	Namespace    string        `env:"NAMESPACE"`
-	GitBinary    string        `env:"GIT_BINARY"`
-	PollDuration time.Duration `env:"POLL_DURATION"`
-	NoLoop       bool          `env:"NO_LOOP"`
+	Dir             string        `env:"WORK_DIR"`
+	Namespace       string        `env:"NAMESPACE"`
+	GitBinary       string        `env:"GIT_BINARY"`
+	PollDuration    time.Duration `env:"POLL_DURATION"`
+	NoLoop          bool          `env:"NO_LOOP"`
+	NoResourceApply bool          `env:"NO_RESOURCE_APPLY"`
 }
 
 // Run polls for git changes
@@ -123,9 +124,10 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	}
 
 	_, err = o.Launcher.Launch(launcher.LaunchOptions{
-		Repository: r,
-		GitSHA:     text,
-		Dir:        dir,
+		Repository:      r,
+		GitSHA:          text,
+		Dir:             dir,
+		NoResourceApply: o.NoResourceApply,
 	})
 	if err != nil {
 		return errors.Wrapf(err, "failed to launch job for %s", name)

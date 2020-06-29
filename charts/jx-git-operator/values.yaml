@@ -7,6 +7,9 @@ rbac:
   # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
   cluster: true
 
+  # if strict mode lets not assume cluster-admin
+  strict: false
+
 replicaCount: 1
 
 nameOverride: ""

@@ -4,6 +4,7 @@ kind: ClusterRole
 metadata:
   name: {{ template "jx-git-operator.name" . }}
 rules:
+{{- if .Values.rbac.strict }}
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "list", "watch"]
@@ -13,4 +14,16 @@ rules:
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+{{- else }}
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - '*'
+{{- end -}}
 {{- end -}}
