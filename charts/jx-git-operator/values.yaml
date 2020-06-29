@@ -1,6 +1,6 @@
 image:
-  repository: gcr.io/jenkinsxio-labs/jx-git-operator
-  tag: "latest"
+  repository: gcr.io/jenkinsxio-labs-private/jx-git-operator
+  tag: 0.0.37
   pullPolicy: IfNotPresent
 
 rbac:
