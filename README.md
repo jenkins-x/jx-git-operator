@@ -50,6 +50,8 @@ kubectl create secret generic jx-git-operator-boot --from-literal=url=https://my
 kubectl label secret jx-git-operator-boot git-operator.jenkins.io/kind=git-operator
 ```
 
+Once the secret has been created you should see in the logs of the operator pod (see below) that the git repository is cloned and a `Job` is triggered to apply the contents of git.
+ 
 ### Viewing the logs
 
 To see the logs of the operator try:
