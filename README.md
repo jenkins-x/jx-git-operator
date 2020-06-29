@@ -46,9 +46,11 @@ You need to create a `Secret` to map the git repository to the `jx-git-operator`
 For private repositories this will also need a username and token/password to be able to clone the git repository.
 
 ```bash 
-kubectl create secret generic jx-git-operator-boot --from-literal=url=https://myusername:mytoken@github.com/myowner/myrepo.git
-kubectl label secret jx-git-operator-boot git-operator.jenkins.io/kind=git-operator
+kubectl create secret generic jx-boot --from-literal=url=https://$GIT_USERNAME:$GIT_TOKEN@github.com/myowner/myrepo.git
+kubectl label secret jx-boot git-operator.jenkins.io/kind=git-operator
 ```
+
+You can use any name you like for the `Secret` - it will be used as the prefix for the `Job` resources that are created.
 
 Once the secret has been created you should see in the logs of the operator pod (see below) that the git repository is cloned and a `Job` is triggered to apply the contents of git.
  
