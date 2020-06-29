@@ -28,7 +28,7 @@ The chart defaults to using a `cluster-admin` role so it can create `Job` resour
 
 You can enable strict mode which only requires roles to read `Secret` resources in the namespace its installed and list/create `Job` resources via the `rbac.strict = true`. 
 
-Also to avoid cluster roles use `rbac.cluster = false` which only uses a `Role` and `RoleBinding` in the install namespace.
+To avoid cluster roles use `rbac.cluster = false` which only uses a `Role` and `RoleBinding` in current namespace.
 
 ### Setting up a repository
 
