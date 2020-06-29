@@ -34,6 +34,11 @@ Also to avoid cluster roles use `rbac.cluster = false` which only uses a `Role` 
 
 The git repository you wish to boot needs to have the `.jx/git-operator/job.yaml` defined to specify the Kubernetes `Job` to perform the boot job.
 
+A `Job` needs to have an associated `ServiceAccount` and either a `ClusterRole` + `ClusterRoleBinding` or `Role` + `RoleBinding`. You can specify those additional resources in the `.jx/git-operator/resources/*.yaml` directory and the operator will `kubectl apply -f .jx/git-operator/resources` before creating the `Job`.
+
+You can disable this behavior by using `rbac.strict = true` when installing the operator. In this case an administrator will need to run: `kubectl apply -f .jx/git-operator/resources` in a git clone of the repository before setting up the Secret
+
+ 
 ### Create the Git URL Secret
 
 You need to create a `Secret` to map the git repository to the `jx-git-operator`. 
