@@ -11,8 +11,8 @@ To install the git operator using [helm 3](https://helm.sh/) then try:
 Setup a namespace:
 
 ```bash 
-kubectl create ns jxb
-jx ns jxb
+kubectl create ns jx-git-operator
+jx ns jx-git-operator
 ```
 
 Then use helm to install/upgrade:
