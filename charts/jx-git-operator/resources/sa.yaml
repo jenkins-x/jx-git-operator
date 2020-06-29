@@ -1,0 +1,6 @@
+---
+# Source: jx-git-operator/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "jx-git-operator"
