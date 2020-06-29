@@ -32,12 +32,23 @@ type Options struct {
 	// KubeClient is used to lazy create the repo client and launcher
 	KubeClient kubernetes.Interface
 
-	Dir             string        `env:"WORK_DIR"`
-	Namespace       string        `env:"NAMESPACE"`
-	GitBinary       string        `env:"GIT_BINARY"`
-	PollDuration    time.Duration `env:"POLL_DURATION"`
-	NoLoop          bool          `env:"NO_LOOP"`
-	NoResourceApply bool          `env:"NO_RESOURCE_APPLY"`
+	// Dir is the work directory. If not specified a temporary directory is created on startup.
+	Dir string `env:"WORK_DIR"`
+
+	// Namespace the namespace polled for `Secret` resources
+	Namespace string `env:"NAMESPACE"`
+
+	// GitBinary name of the git binary; defaults to `git`
+	GitBinary string `env:"GIT_BINARY"`
+
+	// PollDuration duration between polls
+	PollDuration time.Duration `env:"POLL_DURATION"`
+
+	// NoLoop disable the polling loop so that a single poll is performed only
+	NoLoop bool `env:"NO_LOOP"`
+
+	// NoResourceApply disable the applying of resources in a git repository at `.jx/git-operator/resources/*.yaml`
+	NoResourceApply bool `env:"NO_RESOURCE_APPLY"`
 }
 
 // Run polls for git changes
