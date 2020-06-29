@@ -1,7 +1,5 @@
-image:
-  repository: gcr.io/jenkinsxio-labs/jx-git-operator
-  tag: "latest"
-  pullPolicy: IfNotPresent
+# the git URL to create the secret for
+url: ""
 
 rbac:
   # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
@@ -9,6 +7,11 @@ rbac:
 
   # if strict mode lets not assume cluster-admin
   strict: false
+
+image:
+  repository: gcr.io/jenkinsxio-labs/jx-git-operator
+  tag: "latest"
+  pullPolicy: IfNotPresent
 
 replicaCount: 1
 
