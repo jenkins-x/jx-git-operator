@@ -2,6 +2,11 @@ buildPack: go-cli
 dockerRegistryOwner: jenkinsxio-labs-private
 pipelineConfig:
   pipelines:
+    overrides:
+      - pipeline: release
+        name: changelog
+        step:
+          sh: jx step changelog --verbose --header-file=hack/changelog-header.md --version=$VERSION --rev=$PULL_BASE_SHA --output-markdown=changelog.md --update-release=false --no-dev-release
     release:
       pipeline:
         stages:

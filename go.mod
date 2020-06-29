@@ -3,7 +3,7 @@ module github.com/jenkins-x/jx-git-operator
 go 1.13
 
 require (
-	github.com/jenkins-x/jx-helpers v1.0.4
+	github.com/jenkins-x/jx-helpers v1.0.7
 	github.com/jenkins-x/jx-kube-client v0.0.8
 	github.com/jenkins-x/jx-logging v0.0.8
 	github.com/pkg/errors v0.9.1
