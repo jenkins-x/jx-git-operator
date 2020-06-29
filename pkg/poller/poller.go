@@ -53,7 +53,7 @@ type Options struct {
 
 // Run polls for git changes
 func (o *Options) Run() error {
-	err := o.validateOptions()
+	err := o.ValidateOptions()
 	if err != nil {
 		return errors.Wrap(err, "invalid options")
 	}
@@ -79,7 +79,7 @@ func (o *Options) Run() error {
 
 // Poll polls the available repositories
 func (o *Options) Poll() error {
-	err := o.validateOptions()
+	err := o.ValidateOptions()
 	if err != nil {
 		return errors.Wrap(err, "invalid options")
 	}
@@ -146,8 +146,8 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	return nil
 }
 
-// validateOptions validates the options and lazily creates any resources required
-func (o *Options) validateOptions() error {
+// ValidateOptions validates the options and lazily creates any resources required
+func (o *Options) ValidateOptions() error {
 	if o.PollDuration.Milliseconds() == int64(0) {
 		o.PollDuration = time.Second * 30
 	}

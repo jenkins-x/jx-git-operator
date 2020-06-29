@@ -10,6 +10,7 @@ import (
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/pkg/files"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,7 +32,7 @@ func TestPoller(t *testing.T) {
 	t.Logf("running in dir %s", tmpDir)
 
 	// lets copy the dummy git clone to the temp dir
-	err = files.CopyDirOverwrite(filepath.Join("test_data",  repoName), filepath.Join(tmpDir, repoName))
+	err = files.CopyDirOverwrite(filepath.Join("test_data", repoName), filepath.Join(tmpDir, repoName))
 	require.NoError(t, err, "failed to copy git clone data to temp dir")
 
 	kubeClient := fake.NewSimpleClientset(
@@ -49,14 +50,13 @@ func TestPoller(t *testing.T) {
 		},
 	)
 	runner := &fakerunner.FakeRunner{
-		CommandRunner: func (c *cmdrunner.Command) (string, error) {
+		CommandRunner: func(c *cmdrunner.Command) (string, error) {
 			if c.Name == "git" && len(c.Args) > 0 && c.Args[0] == "rev-parse" {
 				return gitSha, nil
 			}
 			return "", nil
 		},
 	}
-
 
 	p := &poller.Options{
 		CommandRunner: runner.Run,
@@ -66,27 +66,33 @@ func TestPoller(t *testing.T) {
 		NoLoop:        true,
 	}
 
-
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
-
 
 	// TODO verify we have a Job
 
-
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
-
 
 	// TODO verify we don't create another one
 	for _, c := range runner.OrderedCommands {
 		t.Logf("created command: %s\n", c.CLI())
 	}
 	/*
-	runner.ExpectResults(t,
-		fakerunner.FakeResult{
-			CLI: "kubectl apply -f " + resourcesDir,
-		},
-	)
+		runner.ExpectResults(t,
+			fakerunner.FakeResult{
+				CLI: "kubectl apply -f " + resourcesDir,
+			},
+		)
 	*/
+}
+
+func TestLazyCreatePoller(t *testing.T) {
+	p := &poller.Options{}
+
+	err := p.ValidateOptions()
+	require.NoError(t, err, "failed to ValidateOptions()")
+
+	assert.NotNil(t, p.GitClient, "GitClient")
+	assert.NotNil(t, p.Launcher, "Launcher")
 }
