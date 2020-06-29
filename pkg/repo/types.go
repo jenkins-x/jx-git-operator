@@ -2,7 +2,12 @@ package repo
 
 // Repository represents a git repository to clone
 type Repository struct {
-	Name      string
+	// Name name of the repository
+	Name string
+
+	// Namespace of the repository - where the `Job` will be created
 	Namespace string
-	GitURL    string
+
+	// GitURL the URL to git clone the repository
+	GitURL string
 }
