@@ -1,12 +1,12 @@
 buildPack: go-cli
-dockerRegistryOwner: jenkinsxio-labs-private
+dockerRegistryOwner: jenkinsxio-labs
 pipelineConfig:
   pipelines:
     release:
       pipeline:
         stages:
           - agent:
-              image: gcr.io/jenkinsxio-labs-private/jxl
+              image: gcr.io/jenkinsxio/builder-go
             name: chart
             steps:
               - name: release-binary
@@ -15,6 +15,13 @@ pipelineConfig:
               - name: build-and-push-image
                 image: gcr.io/kaniko-project/executor:debug-9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
                 command: /kaniko/executor --cache=true --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=gcr.io/$DOCKER_REGISTRY_ORG/jx-git-operator:$VERSION --cache-repo=gcr.io/jx-labs-infra/cache
+                env:
+                - name: NO_GOOGLE_APPLICATION_CREDENTIALS
+                  value: "true"
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: ""
+                - name: DOCKER_REGISTRY_ORG
+                  value: jenkinsxio-labs
               - name: changelog
                 command: jx step changelog --verbose --header-file=hack/changelog-header.md --version=$VERSION --rev=$PULL_BASE_SHA --output-markdown=changelog.md --update-release=false --generate-yaml=false
               - name: release-chart
