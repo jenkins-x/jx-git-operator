@@ -70,9 +70,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	}
 	safeName := naming.ToValidValue(opts.Repository.Name)
 	safeSha := naming.ToValidValue(opts.GitSHA)
-	selector := fmt.Sprintf("%s,%s=%s,%s=%s", c.selector,
-		launcher.RepositoryLabelKey, safeName,
-		launcher.CommitShaLabelKey, safeSha)
+	selector := fmt.Sprintf("%s,%s=%s", c.selector, launcher.RepositoryLabelKey, safeName)
 	jobInterface := c.kubeClient.BatchV1().Jobs(ns)
 	list, err := jobInterface.List(metav1.ListOptions{
 		LabelSelector: selector,
@@ -84,17 +82,34 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 		return nil, errors.Wrapf(err, "failed to find Jobs in namespace %s with selector %s", ns, selector)
 	}
 
+	var jobsForSha []v1.Job
+	var activeJobs []v1.Job
 	for _, r := range list.Items {
 		log.Logger().Infof("found Job %s", r.Name)
 
-		// TODO should we do anything with the status of existing jobs? e.g. report status somewhere
+		if r.Labels[launcher.CommitShaLabelKey] == safeSha {
+			jobsForSha = append(jobsForSha, r)
+		}
+
+		// is the job active
+		if IsJobActive(r) {
+			activeJobs = append(activeJobs, r)
+		}
 	}
 
-	if len(list.Items) == 0 {
+	if len(jobsForSha) == 0 {
+		if len(activeJobs) > 0 {
+			log.Logger().Infof("not creating a Job in namespace %s for repo %s sha %s yet as there is an active job %s", ns, safeName, safeSha, activeJobs[0].Name)
+			return nil, nil
+		}
 		return c.startNewJob(opts, jobInterface, ns, safeName, safeSha)
 	}
-
 	return nil, nil
+}
+
+// IsJobActive returns true if the job has not completed or terminated yet
+func IsJobActive(r v1.Job) bool {
+	return r.Status.Succeeded == 0 && r.Status.Failed == 0
 }
 
 // startNewJob lets create a new Job resource

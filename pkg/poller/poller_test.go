@@ -6,14 +6,17 @@ import (
 	"testing"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
+	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/poller"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/pkg/files"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -69,22 +72,65 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	// TODO verify we have a Job
+	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
 
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	// TODO verify we don't create another one
+	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
+
+	// now lets do a new commit
+	firstGitSha := gitSha
+	gitSha = "new-commit-sha"
+	t.Logf("now creating a second commit with sha %s", gitSha)
+
+	err = p.Run()
+	require.NoError(t, err, "failed to run poller")
+
+	oldJobs := assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, firstGitSha, 1)
+	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 0)
+
+	// now lets make the first job as completed
+	require.Len(t, oldJobs, 1, "should have one job for the old git commit")
+
+	job := oldJobs[0]
+	job.Status.Succeeded = 1
+	_, err = kubeClient.BatchV1().Jobs(ns).Update(&job)
+	require.NoError(t, err, "failed to update the job %s in namespace %s to succeeded", job.Name, ns)
+
+	err = p.Run()
+	require.NoError(t, err, "failed to run poller")
+
+	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
+
 	for _, c := range runner.OrderedCommands {
 		t.Logf("created command: %s\n", c.CLI())
 	}
-	/*
-		runner.ExpectResults(t,
-			fakerunner.FakeResult{
-				CLI: "kubectl apply -f " + resourcesDir,
-			},
-		)
-	*/
+}
+
+func assertHasJobCountForRepoAndSha(t *testing.T, kubeClient kubernetes.Interface, ns string, repoName string, sha string, expectedCount int) []v1.Job {
+	selector := constants.DefaultSelectorKey
+	jobs, err := kubeClient.BatchV1().Jobs(ns).List(metav1.ListOptions{
+		LabelSelector: selector,
+	})
+	require.NoError(t, err, "failed to list jobs in namespace %s with selector %s", ns, selector)
+	require.NotNil(t, jobs, "no JobsList object returned for namespace %s with selector %s", ns, selector)
+
+	count := 0
+	for _, j := range jobs.Items {
+		name := j.Name
+		labels := j.Labels
+		if labels == nil {
+			t.Logf("Job %s in namespace %s does not have any labels", name, ns)
+			continue
+		}
+		if labels[launcher.RepositoryLabelKey] == repoName && labels[launcher.CommitShaLabelKey] == sha {
+			count++
+			t.Logf("found Job %s in namespace %s for repoName %s and sha %s", name, ns, repoName, sha)
+		}
+	}
+	assert.Equal(t, expectedCount, count, "number of Jobs in namespace %s with selector %s with repo %s and git sha %s", ns, selector, repoName, sha)
+	return jobs.Items
 }
 
 func TestLazyCreatePoller(t *testing.T) {
