@@ -1,5 +1,5 @@
 buildPack: go-cli
-dockerRegistryOwner: jenkinsxio-labs
+dockerRegistryOwner: jenkinsxio-labs-private
 pipelineConfig:
   pipelines:
     release:

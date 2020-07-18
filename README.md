@@ -4,9 +4,17 @@
 
 It can be used to install/upgrade any environment (development, staging, production) via some GitOps approach using some set of tools (`kubectl`, `helm`, `helmfile`, `kpt`, `kustomize` etc).
 
-### Installing
+### Installing the easy way
 
-To install the git operator using [helm 3](https://helm.sh/) then try:
+The `jx-admin` command line will install the operator for you and setup the Git URL Secret so try one of these commands:
+
+* [jx-admin create](https://github.com/jenkins-x/jx-admin/blob/master/docs/cmd/jx-admin_create.md) if you don't yet have a git repository 
+* [jx-admin operator](https://github.com/jenkins-x/jx-admin/blob/master/docs/cmd/jx-admin_operator.md) if you already have a git repository and just want to install the operator
+
+
+### Installing the hard way
+
+To install the git operator by hand using [helm 3](https://helm.sh/) then try:
 
 Setup a namespace:
 
