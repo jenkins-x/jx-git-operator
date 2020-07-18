@@ -4,6 +4,15 @@
 
 It can be used to install/upgrade any environment (development, staging, production) via some GitOps approach using some set of tools (`kubectl`, `helm`, `helmfile`, `kpt`, `kustomize` etc).
 
+
+### Overview
+
+This operator will poll for git commits in git repositories. If a new git commit sha is detected in the repository, the repository is cloned and a `Job` is triggered.
+
+The `Job` to trigger is defined in the `.jx/git-operator/job.yaml` file inside the git repository.
+
+Here is [an example repository](https://github.com/jenkins-x/jx3-boot-config/tree/master/.jx/git-operator) so you can see how it works
+
 ### Installing the easy way
 
 The `jx-admin` command line will install the operator for you and setup the Git URL Secret so try one of these commands:
