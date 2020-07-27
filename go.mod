@@ -7,7 +7,7 @@ require (
 	github.com/jenkins-x/jx-kube-client v0.0.8
 	github.com/jenkins-x/jx-logging v0.0.8
 	github.com/pkg/errors v0.9.1
-	github.com/sethvargo/go-envconfig v0.1.1
+	github.com/sethvargo/go-envconfig v0.2.2
 	github.com/stretchr/testify v1.6.0
 	k8s.io/api v0.17.6
 	k8s.io/apimachinery v0.17.6
