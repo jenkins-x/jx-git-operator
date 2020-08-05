@@ -261,6 +261,8 @@ github.com/satori/go.uuid v1.2.1-0.20180103174451-36e9d2ebbde5/go.mod h1:dA0hQrY
 github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAmXWZgo=
 github.com/sethvargo/go-envconfig v0.1.2 h1:MyWRdUvR1mn9BV9g1/p0MroI/1r1ai8DtunRLymASbY=
 github.com/sethvargo/go-envconfig v0.1.2/go.mod h1:XZ2JRR7vhlBEO5zMmOpLgUhgYltqYqq4d4tKagtPUv0=
+github.com/sethvargo/go-envconfig v0.2.4 h1:a5F1bI4tD6WGsawt0H+CsdFqeYEq9IKMD/qiqgjHoqw=
+github.com/sethvargo/go-envconfig v0.2.4/go.mod h1:XZ2JRR7vhlBEO5zMmOpLgUhgYltqYqq4d4tKagtPUv0=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.5.0/go.mod h1:+F7Ogzej0PZc/94MaYx/nvG9jOFMD2osvC3s+Squfpo=
