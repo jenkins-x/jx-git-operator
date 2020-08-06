@@ -14,7 +14,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/sethvargo/go-envconfig v0.1.2
+	github.com/sethvargo/go-envconfig v0.2.5
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/text v0.3.3 // indirect
 	k8s.io/api v0.17.9
