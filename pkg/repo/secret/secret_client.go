@@ -58,7 +58,10 @@ func (c *client) List() ([]repo.Repository, error) {
 
 	var answer []repo.Repository
 	for _, s := range list.Items {
-		r := c.toRepository(&s)
+		r, err := c.toRepository(&s)
+		if err != nil {
+			return answer, errors.Wrapf(err, "failed to create repo.Repository")
+		}
 		if r.GitURL != "" {
 			answer = append(answer, r)
 		}
@@ -66,11 +69,18 @@ func (c *client) List() ([]repo.Repository, error) {
 	return answer, nil
 }
 
-func (c *client) toRepository(s *v1.Secret) repo.Repository {
+func (c *client) toRepository(s *v1.Secret) (repo.Repository, error) {
 	if s.Data == nil {
 		s.Data = map[string][]byte{}
 	}
-	gitURL := string(s.Data["url"])
+
+	rawurl := string(s.Data["url"])
+	username := string(s.Data["username"])
+	password := string(s.Data["password"])
+	gitURL, err := repo.AddGitURLUserPassword(rawurl, username, password)
+	if err != nil {
+		return repo.Repository{}, errors.Wrapf(err, "failed to create git URL from url %s username: %s password %s", rawurl, username, password)
+	}
 	ns := s.Namespace
 	if ns == "" {
 		ns = c.ns
@@ -79,5 +89,5 @@ func (c *client) toRepository(s *v1.Secret) repo.Repository {
 		Name:      s.Name,
 		Namespace: ns,
 		GitURL:    gitURL,
-	}
+	}, nil
 }

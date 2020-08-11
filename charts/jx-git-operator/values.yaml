@@ -1,6 +1,12 @@
 # the git URL to create the secret for
 url: ""
 
+# the git user name used to clone the git URL if its not embedded in the URL
+username: ""
+
+# the git password used to clone the git URL if its not embedded in the URL
+password: ""
+
 rbac:
   # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
   cluster: true
