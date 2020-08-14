@@ -1,4 +1,4 @@
-FROM gcr.io/jenkinsxio-labs-private/jxl-base:0.0.53
+FROM gcr.io/jenkinsxio-labs-private/jx-cli-base:0.0.3
 
 ENTRYPOINT ["jx-git-operator"]
 
