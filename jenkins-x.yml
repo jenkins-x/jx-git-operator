@@ -2,6 +2,18 @@ buildPack: go-cli
 dockerRegistryOwner: jenkinsxio
 pipelineConfig:
   pipelines:
+    overrides:
+    - name: helm-template
+      step:
+        sh: echo disabled
+    - name: make-linux
+      step:
+        sh: make linux
+        image: golang:1.13
+    - name: make-test
+      step:
+        sh: make test
+        image: golang:1.13
     release:
       pipeline:
         stages:
