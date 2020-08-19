@@ -1,5 +1,5 @@
 buildPack: go-cli
-dockerRegistryOwner: jenkinsxio-labs-private
+dockerRegistryOwner: jenkinsxio
 pipelineConfig:
   pipelines:
     release:
@@ -21,7 +21,7 @@ pipelineConfig:
                 - name: GOOGLE_APPLICATION_CREDENTIALS
                   value: ""
                 - name: DOCKER_REGISTRY_ORG
-                  value: jenkinsxio-labs-private
+                  value: jenkinsxio
               - name: changelog
                 command: jx step changelog --verbose --header-file=hack/changelog-header.md --version=$VERSION --rev=$PULL_BASE_SHA --output-markdown=changelog.md --update-release=false --generate-yaml=false
               - name: release-chart
@@ -30,10 +30,7 @@ pipelineConfig:
                 dir: /workspace/source/charts/jx-git-operator
               - name: upload-binaries
                 command: make goreleaser
-                image: gcr.io/jenkinsxio-labs-private/step-go-releaser:0.0.5
-#              - name: copy-to-bucket
-#                command: gsutil cp dist/*.gz dist/*.zip gs://cloudbees-jx-project-plugin/plugin/${VERSION}
-#                image: gcr.io/jenkinsxio-labs-private/jxl
+                image: gcr.io/jenkinsxio-labs/go-releaser:0.0.18
               - command: ./promote.sh
                 dir: /workspace/source
                 name: promote-release

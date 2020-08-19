@@ -1,4 +1,4 @@
-CHART_REPO := gs://jenkinsxio-labs-private/charts
+CHART_REPO := gs://jenkinsxio/charts
 NAME := jx-git-operator
 
 build: clean
