@@ -116,9 +116,19 @@ func IsJobActive(r v1.Job) bool {
 func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
-	folder := filepath.Join(opts.Dir, ".jx", "git-operator")
+	// lets see if we are using a version stream to store the git operator configuration
+	folder := filepath.Join(opts.Dir, "versionStream", "git-operator")
+	exists, err := files.DirExists(folder)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to check if folder exists %s", folder)
+	}
+	if !exists {
+		// lets try the original location
+		folder = filepath.Join(opts.Dir, ".jx", "git-operator")
+	}
+
 	fileName := filepath.Join(folder, "job.yaml")
-	exists, err := files.FileExists(fileName)
+	exists, err = files.FileExists(fileName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
 	}

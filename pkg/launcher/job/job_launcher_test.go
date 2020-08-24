@@ -23,7 +23,7 @@ func TestJobLauncher(t *testing.T) {
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
 
-	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", ".jx", "git-operator", "resources"))
+	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", "versionStream", "git-operator", "resources"))
 	require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
 
 	kubeClient := fake.NewSimpleClientset(
