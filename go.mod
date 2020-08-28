@@ -7,7 +7,7 @@ require (
 	github.com/Azure/go-autorest/autorest/adal v0.8.3 // indirect
 	github.com/golang/protobuf v1.3.5 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jenkins-x/jx-helpers v1.0.45
+	github.com/jenkins-x/jx-helpers v1.0.47
 	github.com/jenkins-x/jx-kube-client v0.0.8
 	github.com/jenkins-x/jx-logging v0.0.11
 	github.com/json-iterator/go v1.1.10 // indirect
