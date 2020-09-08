@@ -50,3 +50,7 @@ resources:
     memory: 128Mi
 
 terminationGracePeriodSeconds: 30
+
+bootServiceAccount:
+  enabled: false
+  annotations: {}

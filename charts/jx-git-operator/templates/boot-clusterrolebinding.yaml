@@ -1,0 +1,14 @@
+{{- if .Values.bootServiceAccount.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jx-boot-job
+subjects:
+- kind: ServiceAccount
+  name: jx-boot-job
+  namespace: jx
+roleRef:
+  kind: ClusterRole
+  name:  jx-boot-job
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
