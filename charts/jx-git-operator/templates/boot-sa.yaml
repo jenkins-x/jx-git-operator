@@ -1,0 +1,9 @@
+{{- if .Values.bootServiceAccount.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "jx-boot-job"
+  {{- if .Values.bootServiceAccount.annotations }}
+  annotations: {{ toYaml .Values.bootServiceAccount.annotations | nindent 4 }}
+  {{- end }}
+{{- end }}
