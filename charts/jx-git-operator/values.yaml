@@ -16,7 +16,7 @@ rbac:
 
 image:
   repository: gcr.io/jenkinsxio/jx-git-operator
-  tag: 0.0.82
+  tag: 0.0.83
   pullPolicy: IfNotPresent
 
 replicaCount: 1
