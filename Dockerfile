@@ -1,4 +1,4 @@
-FROM gcr.io/jenkinsxio/jx-cli-base:0.0.26
+FROM gcr.io/jenkinsxio/jx-cli-base:0.0.27
 
 ENTRYPOINT ["jx-git-operator"]
 
