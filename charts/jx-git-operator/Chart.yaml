@@ -1,6 +1,6 @@
 apiVersion: v2
-appVersion: 0.0.90
+appVersion: 0.0.91
 description: A Helm chart for Kubernetes
 icon: https://avatars2.githubusercontent.com/u/47602533
 name: jx-git-operator
-version: 0.0.90
+version: 0.0.91
