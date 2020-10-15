@@ -3,5 +3,5 @@ dependencies:
   owner: jenkins-x
   repo: jx-cli-base-image
   url: https://github.com/jenkins-x/jx-cli-base-image
-  version: 0.0.31
+  version: 0.0.32
   versionURL: ""
