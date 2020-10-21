@@ -87,6 +87,6 @@ you should see it polling your git repository and triggering `Job` instances whe
 
 You can run the `jx-git-operator` locally on the command line if you want. Actions will be created as Kubernetes Jobs even if you run the binary locally - it is just the git polling which runs locally.
 
-Download the [x-git-operator binary](https://github.com/jenkins-x/x-git-operator/releases) for your operating system and add it to your `$PATH`.
+Download the [jx-git-operator binary](https://github.com/jenkins-x/jx-git-operator/releases) for your operating system and add it to your `$PATH`.
 
 There will be an `app` you can install soon too...
