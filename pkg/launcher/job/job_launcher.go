@@ -1,17 +1,18 @@
 package job
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
-	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
-	"github.com/jenkins-x/jx-helpers/pkg/files"
-	"github.com/jenkins-x/jx-helpers/pkg/kube/naming"
-	"github.com/jenkins-x/jx-helpers/pkg/yamls"
-	"github.com/jenkins-x/jx-kube-client/pkg/kubeclient"
-	"github.com/jenkins-x/jx-logging/pkg/log"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/naming"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
+	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
+	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -64,6 +65,7 @@ func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string, ru
 
 // Launch launches a job for the given commit
 func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
+	ctx := context.Background()
 	ns := opts.Repository.Namespace
 	if ns == "" {
 		ns = c.ns
@@ -72,7 +74,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	safeSha := naming.ToValidValue(opts.GitSHA)
 	selector := fmt.Sprintf("%s,%s=%s", c.selector, launcher.RepositoryLabelKey, safeName)
 	jobInterface := c.kubeClient.BatchV1().Jobs(ns)
-	list, err := jobInterface.List(metav1.ListOptions{
+	list, err := jobInterface.List(ctx, metav1.ListOptions{
 		LabelSelector: selector,
 	})
 	if err != nil && apierrors.IsNotFound(err) {
@@ -102,7 +104,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 			log.Logger().Infof("not creating a Job in namespace %s for repo %s sha %s yet as there is an active job %s", ns, safeName, safeSha, activeJobs[0].Name)
 			return nil, nil
 		}
-		return c.startNewJob(opts, jobInterface, ns, safeName, safeSha)
+		return c.startNewJob(ctx, opts, jobInterface, ns, safeName, safeSha)
 	}
 	return nil, nil
 }
@@ -113,7 +115,7 @@ func IsJobActive(r v1.Job) bool {
 }
 
 // startNewJob lets create a new Job resource
-func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
+func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
 	// lets see if we are using a version stream to store the git operator configuration
@@ -181,7 +183,7 @@ func (c *client) startNewJob(opts launcher.LaunchOptions, jobInterface v12.JobIn
 	resource.Labels[launcher.RepositoryLabelKey] = safeName
 	resource.Labels[launcher.CommitShaLabelKey] = safeSha
 
-	r2, err := jobInterface.Create(resource)
+	r2, err := jobInterface.Create(ctx, resource, metav1.CreateOptions{})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create Job %s in namespace %s", resourceName, ns)
 	}

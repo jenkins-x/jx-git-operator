@@ -1,6 +1,7 @@
 package poller_test
 
 import (
+	"context"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -8,9 +9,9 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/poller"
-	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
-	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner/fakerunner"
-	"github.com/jenkins-x/jx-helpers/pkg/files"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner/fakerunner"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/batch/v1"
@@ -22,6 +23,7 @@ import (
 
 func TestPoller(t *testing.T) {
 	ns := "jx"
+	ctx := context.Background()
 	repoName := "fake-repository"
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
@@ -72,12 +74,12 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
 
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
 
 	// now lets do a new commit
 	firstGitSha := gitSha
@@ -87,30 +89,30 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	oldJobs := assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, firstGitSha, 1)
-	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 0)
+	oldJobs := assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, firstGitSha, 1)
+	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 0)
 
 	// now lets make the first job as completed
 	require.Len(t, oldJobs, 1, "should have one job for the old git commit")
 
 	job := oldJobs[0]
 	job.Status.Succeeded = 1
-	_, err = kubeClient.BatchV1().Jobs(ns).Update(&job)
+	_, err = kubeClient.BatchV1().Jobs(ns).Update(ctx, &job, metav1.UpdateOptions{})
 	require.NoError(t, err, "failed to update the job %s in namespace %s to succeeded", job.Name, ns)
 
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
 
 	for _, c := range runner.OrderedCommands {
 		t.Logf("created command: %s\n", c.CLI())
 	}
 }
 
-func assertHasJobCountForRepoAndSha(t *testing.T, kubeClient kubernetes.Interface, ns string, repoName string, sha string, expectedCount int) []v1.Job {
+func assertHasJobCountForRepoAndSha(t *testing.T, ctx context.Context, kubeClient kubernetes.Interface, ns string, repoName string, sha string, expectedCount int) []v1.Job {
 	selector := constants.DefaultSelectorKey
-	jobs, err := kubeClient.BatchV1().Jobs(ns).List(metav1.ListOptions{
+	jobs, err := kubeClient.BatchV1().Jobs(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: selector,
 	})
 	require.NoError(t, err, "failed to list jobs in namespace %s with selector %s", ns, selector)

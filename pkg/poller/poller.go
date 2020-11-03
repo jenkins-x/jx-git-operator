@@ -11,11 +11,12 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo/secret"
-	"github.com/jenkins-x/jx-helpers/pkg/cmdrunner"
-	"github.com/jenkins-x/jx-helpers/pkg/files"
-	"github.com/jenkins-x/jx-helpers/pkg/gitclient"
-	"github.com/jenkins-x/jx-helpers/pkg/gitclient/cli"
-	"github.com/jenkins-x/jx-logging/pkg/log"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient/cli"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
+	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
 	"k8s.io/client-go/kubernetes"
 )
@@ -49,6 +50,9 @@ type Options struct {
 
 	// NoResourceApply disable the applying of resources in a git repository at `.jx/git-operator/resources/*.yaml`
 	NoResourceApply bool `env:"NO_RESOURCE_APPLY"`
+
+	// Branch the branch to poll. If not specified defaults to the default branch from the clone
+	Branch string `env:"BRANCH"`
 }
 
 // Run polls for git changes
@@ -118,7 +122,12 @@ func (o *Options) pollRepository(r repo.Repository) error {
 			return errors.Wrapf(err, "failed to clone repository %s", name)
 		}
 	} else {
-		_, err = o.GitClient.Command(dir, "pull", "origin", "master")
+		if o.Branch == "" {
+			o.Branch, err = gitclient.Branch(o.GitClient, dir)
+			o.Branch = strings.TrimSpace(o.Branch)
+			log.Logger().Infof("using main branch: %s", termcolor.ColorInfo(o.Branch))
+		}
+		_, err = o.GitClient.Command(dir, "pull", "origin", o.Branch)
 		if err != nil {
 			return errors.Wrapf(err, "failed to pull repository %s", name)
 		}

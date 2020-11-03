@@ -1,8 +1,10 @@
 package secret
 
 import (
+	"context"
+
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
-	"github.com/jenkins-x/jx-kube-client/pkg/kubeclient"
+	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -46,7 +48,8 @@ func NewClient(kubeClient kubernetes.Interface, ns string, selector string) (rep
 }
 
 func (c *client) List() ([]repo.Repository, error) {
-	list, err := c.kubeClient.CoreV1().Secrets(c.ns).List(metav1.ListOptions{
+	ctx := context.Background()
+	list, err := c.kubeClient.CoreV1().Secrets(c.ns).List(ctx, metav1.ListOptions{
 		LabelSelector: c.selector,
 	})
 	if err != nil && apierrors.IsNotFound(err) {
