@@ -6,4 +6,7 @@ const (
 
 	// CommitShaLabelKey the label key for associating the commit sha
 	CommitShaLabelKey = "git-operator.jenkins.io/commit-sha"
+
+	// RerunLabelKey the label key to force this job to retrigger
+	RerunLabelKey = "git-operator.jenkins.io/rerun"
 )

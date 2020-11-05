@@ -89,7 +89,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	for _, r := range list.Items {
 		log.Logger().Infof("found Job %s", r.Name)
 
-		if r.Labels[launcher.CommitShaLabelKey] == safeSha {
+		if r.Labels[launcher.CommitShaLabelKey] == safeSha && r.Labels[launcher.RerunLabelKey] != "true" {
 			jobsForSha = append(jobsForSha, r)
 		}
 
