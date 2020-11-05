@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/google/uuid"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
@@ -171,9 +172,10 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 
 	// lets try use a maximum of 31 characters and a minimum of 10 for the sha
 	namePrefix := trimLength(safeName, 20)
-	maxShaLen := 30 - len(namePrefix)
 
-	resourceName := namePrefix + "-" + trimLength(safeSha, maxShaLen)
+	id := uuid.New().String()
+	resourceName := namePrefix + "-" + id
+
 	resource.Name = resourceName
 
 	if resource.Labels == nil {
