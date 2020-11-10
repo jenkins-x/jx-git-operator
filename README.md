@@ -17,7 +17,6 @@ Here is [an example repository](https://github.com/jenkins-x/jx3-boot-config/tre
 
 The `jx-admin` command line will install the operator for you and setup the Git URL Secret so try one of these commands:
 
-* [jx-admin create](https://github.com/jenkins-x/jx-admin/blob/master/docs/cmd/jx-admin_create.md) if you don't yet have a git repository 
 * [jx-admin operator](https://github.com/jenkins-x/jx-admin/blob/master/docs/cmd/jx-admin_operator.md) if you already have a git repository and just want to install the operator
 
 
