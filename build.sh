@@ -11,5 +11,5 @@ fi
 
 echo "building container image version: $VERSION"
 
-gcloud builds submit --config cloudbuild.yaml --project jenkinsxio --gcs-log-dir=gs://jenkinsxio/cloudbuild-logs/jx-git-operator --substitutions=_VERSION="$VERSION"
+gcloud builds submit --config cloudbuild.yaml --project jenkinsxio --substitutions=_VERSION="$VERSION"
 
