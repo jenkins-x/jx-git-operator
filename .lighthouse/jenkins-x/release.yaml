@@ -52,7 +52,7 @@ spec:
           script: |
             #!/bin/bash
             source .jx/variables.sh
-            build.sh
+            /workspace/source/build.sh
         - image: jnorwood/helm-docs:latest
           name: chart-docs
           resources: {}
