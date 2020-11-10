@@ -13,12 +13,6 @@ spec:
       taskSpec:
         metadata: {}
         stepTemplate:
-          name: ""
-          resources: {}
-          volumeMounts:
-          - mountPath: /etc/podinfo
-            name: podinfo
-            readOnly: true
           workingDir: /workspace/source
         steps:
         - image: gcr.io/jenkinsxio/builder-go
@@ -52,14 +46,13 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             make release
-        - image: gcr.io/kaniko-project/executor:debug-v1.3.0
+        - image: google/cloud-sdk:slim
           name: build-and-push-image
           resources: {}
           script: |
-            #!/busybox/sh
+            #!/bin/bash
             source .jx/variables.sh
-            cp /tekton/creds-secrets/tekton-container-registry-auth/.dockerconfigjson /kaniko/.docker/config.json
-            /kaniko/executor --cache=true --cache-dir=/workspace --context=/workspace/source --dockerfile=/workspace/source/Dockerfile --destination=gcr.io/$DOCKER_REGISTRY_ORG/$REPO_NAME:$VERSION --cache-repo=gcr.io/jx-labs-infra/cache
+            build.sh
         - image: jnorwood/helm-docs:latest
           name: chart-docs
           resources: {}
