@@ -22,6 +22,12 @@ ARG REVISION
 
 LABEL maintainer="jenkins-x"
 
+# kubectl
+ENV KUBECTL_VERSION 1.16.15
+RUN curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+  mv kubectl /usr/bin/kubectl && \
+  chmod +x /usr/bin/kubectl
+
 RUN addgroup -S app \
     && adduser -S -g app app \
     && apk --no-cache add \
