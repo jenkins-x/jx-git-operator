@@ -32,7 +32,7 @@ RUN addgroup -S app \
 ENV KUBECTL_VERSION 1.16.15
 
 # lets trim any /v7 suffix
-RUN export PLATFORM=${TARGETPLATFORM%"/v7"} && \
+RUN export PLATFORM=$(bash -c 'echo ${TARGETPLATFORM%"/v7"}') && \
   echo using kubectl version ${KUBECTL_VERSION} and platform ${PLATFORM} && \
   curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/${PLATFORM"}/kubectl && \
   mv kubectl /usr/bin/kubectl && \
