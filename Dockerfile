@@ -1,19 +1,3 @@
-FROM golang:1.15 as builder
-
-ARG REVISION
-
-RUN mkdir -p /jx-git-operator/
-
-WORKDIR /jx-git-operator
-
-COPY . .
-
-RUN go mod download
-
-RUN CGO_ENABLED=0 go build -ldflags "-s -w \
-    -X github.com/jenkins-x/jx-git-operator/pkg/version.REVISION=${REVISION}" \
-    -a -o bin/jx-git-operator main.go
-
 FROM alpine
 
 ARG BUILD_DATE
@@ -38,9 +22,12 @@ RUN echo using kubectl version ${KUBECTL_VERSION} and OS ${TARGETOS} arch ${TARG
   mv kubectl /usr/bin/kubectl && \
   chmod +x /usr/bin/kubectl
 
-WORKDIR /home/app
+RUN echo using jx-git-operator version ${VERSION} and OS ${TARGETOS} arch ${TARGETARCH} && \
+  mkdir -p /home/.jx3 && \
+  curl -L https://github.com/jenkins-x/jx-git-operator/releases/download/v${VERSION}/jx-git-operator-${TARGETOS}-${TARGETARCH}.tar.gz | tar xzv && \
+  mv jx-git-operator /usr/bin
 
-COPY --from=builder /jx-git-operator/bin/jx-git-operator /usr/bin/jx-git-operator
+WORKDIR /home/app
 
 USER app
 

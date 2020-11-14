@@ -46,13 +46,6 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             make release
-        - image: google/cloud-sdk:slim
-          name: build-and-push-image
-          resources: {}
-          script: |
-            #!/bin/bash
-            source .jx/variables.sh
-            /workspace/source/build.sh
         - image: jnorwood/helm-docs:latest
           name: chart-docs
           resources: {}
@@ -82,6 +75,13 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             make goreleaser
+        - image: google/cloud-sdk:slim
+          name: build-and-push-image
+          resources: {}
+          script: |
+            #!/bin/bash
+            source .jx/variables.sh
+            /workspace/source/build.sh
         - image: gcr.io/jenkinsxio/builder-go:2.1.142-761
           name: promote-release
           resources: {}
