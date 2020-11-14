@@ -31,9 +31,9 @@ RUN addgroup -S app \
 # kubectl
 ENV KUBECTL_VERSION 1.16.15
 
-# lets trim any /v7 suffix
-RUN echo using kubectl version ${KUBECTL_VERSION} and platform ${TARGETPLATFORM%/v7} && \
-  curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/${TARGETPLATFORM%/v7}/kubectl && \
+# see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
+RUN echo using kubectl version ${KUBECTL_VERSION} and OS ${TARGETOS} arch ${TARGETARCH} && \
+  curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl && \
   mv kubectl /usr/bin/kubectl && \
   chmod +x /usr/bin/kubectl
 
