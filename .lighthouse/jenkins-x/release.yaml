@@ -53,14 +53,6 @@ spec:
             #!/bin/ash
             if [ -d "/workspace/source/charts/$REPO_NAME" ]; then cd /workspace/source/charts/$REPO_NAME
             helm-docs; else echo no charts; fi
-        - image: gcr.io/jenkinsxio/jx-cli:latest
-          name: release-chart
-          resources: {}
-          script: |
-            #!/bin/bash
-            if [ -d "/workspace/source/charts/$REPO_NAME" ]; then source .jx/variables.sh
-            cd /workspace/source/charts/$REPO_NAME
-            make release; else echo no charts; fi
         - image: gcr.io/jenkinsxio/builder-go:2.1.142-761
           name: changelog
           resources: {}
@@ -82,6 +74,14 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             /workspace/source/build.sh
+        - image: gcr.io/jenkinsxio/jx-cli:latest
+          name: release-chart
+          resources: {}
+          script: |
+            #!/bin/bash
+            if [ -d "/workspace/source/charts/$REPO_NAME" ]; then source .jx/variables.sh
+            cd /workspace/source/charts/$REPO_NAME
+            make release; else echo no charts; fi
         - image: gcr.io/jenkinsxio/builder-go:2.1.142-761
           name: promote-release
           resources: {}
