@@ -30,7 +30,9 @@ RUN addgroup -S app \
 
 # kubectl
 ENV KUBECTL_VERSION 1.16.15
-ENV PLATFORM=${TARGETPLATFORM:-amd64}
+
+# lets trim any /v7 suffix
+ENV PLATFORM=${TARGETPLATFORM%"/v7"}
 
 RUN echo using kubectl version ${KUBECTL_VERSION} and platform ${PLATFORM} && \
   curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/${PLATFORM}/kubectl && \
