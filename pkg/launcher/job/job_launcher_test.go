@@ -1,6 +1,7 @@
 package job_test
 
 import (
+	"io/ioutil"
 	"path/filepath"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/testhelpers"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -23,60 +25,80 @@ func TestJobLauncher(t *testing.T) {
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
 
-	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", "versionStream", "git-operator", "resources"))
-	require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
+	fs, err := ioutil.ReadDir("test_data")
+	require.NoError(t, err, "failed to load test data")
 
-	kubeClient := fake.NewSimpleClientset(
-		&corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      repoName,
-				Namespace: ns,
-				Labels: map[string]string{
-					constants.DefaultSelectorKey: constants.DefaultSelectorValue,
+	for _, f := range fs {
+		if f == nil || !f.IsDir() {
+			continue
+		}
+		name := f.Name()
+
+		t.Logf("running test %s\n", name)
+		resourcesDir, err := filepath.Abs(filepath.Join("test_data", name, "versionStream", "git-operator", "resources"))
+		require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
+
+		kubeClient := fake.NewSimpleClientset(
+			&corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      repoName,
+					Namespace: ns,
+					Labels: map[string]string{
+						constants.DefaultSelectorKey: constants.DefaultSelectorValue,
+					},
+				},
+				Data: map[string][]byte{
+					"url": []byte(gitURL),
 				},
 			},
-			Data: map[string][]byte{
-				"url": []byte(gitURL),
+		)
+		runner := &fakerunner.FakeRunner{}
+
+		client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector, runner.Run)
+		require.NoError(t, err, "failed to create launcher client")
+
+		o := launcher.LaunchOptions{
+			Repository: repo.Repository{
+				Name:      repoName,
+				Namespace: ns,
+				GitURL:    gitURL,
 			},
-		},
-	)
-	runner := &fakerunner.FakeRunner{}
+			GitSHA: gitSha,
+			Dir:    filepath.Join("test_data", name),
+		}
+		objects, err := client.Launch(o)
+		require.NoError(t, err, "failed to launch the job")
+		require.Len(t, objects, 1, "should have created one runtime.Object after launching")
 
-	client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector, runner.Run)
-	require.NoError(t, err, "failed to create launcher client")
+		o1 := objects[0]
+		j1, ok := o1.(*v1.Job)
+		require.True(t, ok, "could not convert object %#v to a Job")
 
-	o := launcher.LaunchOptions{
-		Repository: repo.Repository{
-			Name:      repoName,
-			Namespace: ns,
-			GitURL:    gitURL,
-		},
-		GitSHA: gitSha,
-		Dir:    filepath.Join("test_data", "somerepo"),
+		t.Logf("created Job with name %s", j1.Name)
+
+		msg := "created Job"
+		testhelpers.AssertLabel(t, constants.DefaultSelectorKey, constants.DefaultSelectorValue, j1.ObjectMeta, msg)
+		testhelpers.AssertLabel(t, launcher.RepositoryLabelKey, repoName, j1.ObjectMeta, msg)
+		testhelpers.AssertLabel(t, launcher.CommitShaLabelKey, gitSha, j1.ObjectMeta, msg)
+
+		runner.ExpectResults(t,
+			fakerunner.FakeResult{
+				CLI: "kubectl apply -f " + resourcesDir,
+			},
+		)
+
+		// we should not recreate the Job if we try to launch again as it already exists
+		objects, err = client.Launch(o)
+		require.NoError(t, err, "failed to launch the job")
+		require.Len(t, objects, 0, "should not have a created a runtime.Object as we already have one for the commit sha")
+
+		if name == "customjob" {
+			containers := j1.Spec.Template.Spec.Containers
+			require.Len(t, containers, 2, "containers for test %s", name)
+
+			c2 := containers[1]
+			assert.Equal(t, "gsm", c2.Name, "container[1].Name for test %s", name)
+			t.Logf("generated gsm sidecar")
+		}
 	}
-	objects, err := client.Launch(o)
-	require.NoError(t, err, "failed to launch the job")
-	require.Len(t, objects, 1, "should have created one runtime.Object after launching")
-
-	o1 := objects[0]
-	j1, ok := o1.(*v1.Job)
-	require.True(t, ok, "could not convert object %#v to a Job")
-
-	t.Logf("created Job with name %s", j1.Name)
-
-	msg := "created Job"
-	testhelpers.AssertLabel(t, constants.DefaultSelectorKey, constants.DefaultSelectorValue, j1.ObjectMeta, msg)
-	testhelpers.AssertLabel(t, launcher.RepositoryLabelKey, repoName, j1.ObjectMeta, msg)
-	testhelpers.AssertLabel(t, launcher.CommitShaLabelKey, gitSha, j1.ObjectMeta, msg)
-
-	runner.ExpectResults(t,
-		fakerunner.FakeResult{
-			CLI: "kubectl apply -f " + resourcesDir,
-		},
-	)
-
-	// we should not recreate the Job if we try to launch again as it already exists
-	objects, err = client.Launch(o)
-	require.NoError(t, err, "failed to launch the job")
-	require.Len(t, objects, 0, "should not have a created a runtime.Object as we already have one for the commit sha")
 }

@@ -3,7 +3,9 @@ package job
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
@@ -130,7 +132,25 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 		folder = filepath.Join(opts.Dir, ".jx", "git-operator")
 	}
 
-	fileName := filepath.Join(folder, "job.yaml")
+	jobFileName := "job.yaml"
+
+	fileNamePath := filepath.Join(opts.Dir, ".jx", "git-operator", "filename.txt")
+	exists, err = files.FileExists(fileNamePath)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to check for file %s", fileNamePath)
+	}
+	if exists {
+		data, err := ioutil.ReadFile(fileNamePath)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to load file %s", fileNamePath)
+		}
+		jobFileName = strings.TrimSpace(string(data))
+		if jobFileName == "" {
+			return nil, errors.Errorf("the job name file %s is empty", fileNamePath)
+		}
+	}
+
+	fileName := filepath.Join(folder, jobFileName)
 	exists, err = files.FileExists(fileName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to find file %s in repository %s", fileName, safeName)
