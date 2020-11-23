@@ -23,7 +23,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
-        - "jx-git-operator"
+        - "/bin/sh"
+        - "-c"
+        args:
+        - "{{ .Values.gitInitCommands | default "echo 'git setup commands can go here'" }}; jx-git-operator"
         env:
 {{- range $pkey, $pval := .Values.env }}
         - name: {{ $pkey }}

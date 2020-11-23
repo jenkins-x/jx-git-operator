@@ -7,6 +7,9 @@ username: ""
 # the git password used to clone the git URL if its not embedded in the URL
 password: ""
 
+# the git setup commands to configure git to deal with things like insecure registries etc
+gitInitCommands: "echo 'no custom git initialisation scripts'"
+
 rbac:
   # if enabled lets install a ClusterRole and ClusterRoleBinding otherwise use Role / RoleBinding
   cluster: true
@@ -15,7 +18,7 @@ rbac:
   strict: false
 
 image:
-  repository: gcr.io/jenkinsxio-labs/jx-git-operator
+  repository: gcr.io/jenkinsxio/jx-git-operator
   tag: "latest"
   pullPolicy: IfNotPresent
 
