@@ -157,6 +157,9 @@ func (o *Options) pollRepository(r repo.Repository) error {
 
 // ValidateOptions validates the options and lazily creates any resources required
 func (o *Options) ValidateOptions() error {
+	if o.CommandRunner == nil {
+		o.CommandRunner = cmdrunner.QuietCommandRunner
+	}
 	if o.PollDuration.Milliseconds() == int64(0) {
 		o.PollDuration = time.Second * 30
 	}
