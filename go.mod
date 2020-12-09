@@ -21,8 +21,8 @@ require (
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/text v0.3.4 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	k8s.io/api v0.19.4
-	k8s.io/apimachinery v0.19.4
+	k8s.io/api v0.20.0
+	k8s.io/apimachinery v0.20.0
 	k8s.io/client-go v0.19.4
 	sigs.k8s.io/structured-merge-diff/v4 v4.0.2 // indirect
 )
