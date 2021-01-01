@@ -57,3 +57,10 @@ terminationGracePeriodSeconds: 30
 bootServiceAccount:
   enabled: false
   annotations: {}
+
+# a list of ociRegistry credentials for use by helmfile where name is the registry name referenced by helmfile
+# ociRegistries:
+# - name: jxdev
+#   username: regusername
+#   password: regpassword
+ociRegistries: []
