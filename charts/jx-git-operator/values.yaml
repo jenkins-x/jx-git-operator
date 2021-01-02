@@ -64,3 +64,6 @@ bootServiceAccount:
 #   username: regusername
 #   password: regpassword
 ociRegistries: []
+
+bootConfigEnv: {}
+#  KUBEAPPLY: "kubectl-apply" # Configures which kubernetes cli is used to apply resources to cluster - valid values are kubectl-apply or kapp-apply
