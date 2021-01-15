@@ -24,7 +24,7 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	k8s.io/api v0.19.7
 	k8s.io/apimachinery v0.19.7
-	k8s.io/client-go v0.19.7
+	k8s.io/client-go v0.20.2
 	k8s.io/kube-openapi v0.0.0-20200923155610-8b5066479488 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.0.2 // indirect
 )
