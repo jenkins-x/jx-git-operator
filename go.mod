@@ -7,7 +7,7 @@ require (
 	github.com/Azure/go-autorest/autorest/adal v0.8.3 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.3 // indirect
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.1.5
 	github.com/googleapis/gnostic v0.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
