@@ -12,7 +12,8 @@ require (
 	github.com/googleapis/gnostic v0.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jenkins-x/jx-helpers/v3 v3.0.61
+	github.com/jenkins-x/jx-api/v4 v4.0.21 // indirect
+	github.com/jenkins-x/jx-helpers/v3 v3.0.62
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.1
 	github.com/jenkins-x/jx-logging/v3 v3.0.3
 	github.com/mattn/go-colorable v0.1.8 // indirect
