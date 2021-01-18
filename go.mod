@@ -12,8 +12,9 @@ require (
 	github.com/googleapis/gnostic v0.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jenkins-x/jx-api/v4 v4.0.21 // indirect
-	github.com/jenkins-x/jx-helpers/v3 v3.0.62
+	github.com/jenkins-x/go-scm v1.5.211 // indirect
+	github.com/jenkins-x/jx-api/v4 v4.0.22 // indirect
+	github.com/jenkins-x/jx-helpers/v3 v3.0.63
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.1
 	github.com/jenkins-x/jx-logging/v3 v3.0.3
 	github.com/mattn/go-colorable v0.1.8 // indirect
@@ -23,10 +24,9 @@ require (
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	k8s.io/api v0.19.7
-	k8s.io/apimachinery v0.19.7
-	k8s.io/client-go v0.19.7
-	k8s.io/kube-openapi v0.0.0-20200923155610-8b5066479488 // indirect
+	k8s.io/api v0.20.2
+	k8s.io/apimachinery v0.20.2
+	k8s.io/client-go v0.20.2
 	sigs.k8s.io/structured-merge-diff/v4 v4.0.2 // indirect
 )
 
