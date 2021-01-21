@@ -68,4 +68,4 @@ ociRegistries: []
 # additional secret keys to place in to a secret optionally mounted by the boot jobs as env vars
 # jxBootSecrets:
 #   secretKey: secretValue
-jxBootJobEnvVarSecrets: []
+jxBootJobEnvVarSecrets: {}
