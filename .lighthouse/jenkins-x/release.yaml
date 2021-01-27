@@ -1,8 +1,6 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  annotations:
-    lighthouse.jenkins-x.io/prependStepsURL: https://raw.githubusercontent.com/jenkins-x/jx3-pipeline-catalog/005e78cf69b643862344397a635736a51dd1bd89/tasks/git-clone/git-clone.yaml
   creationTimestamp: null
   name: release
 spec:
@@ -13,8 +11,14 @@ spec:
       taskSpec:
         metadata: {}
         stepTemplate:
+          image: uses:jenkins-x/jx3-pipeline-catalog/tasks/go-plugin/release.yaml@versionStream
+          name: ""
+          resources: {}
           workingDir: /workspace/source
         steps:
+        - image: uses:jenkins-x/jx3-pipeline-catalog/tasks/git-clone/git-clone.yaml@versionStream
+          name: ""
+          resources: {}
         - image: gcr.io/jenkinsxio/builder-go
           name: next-version
           resources: {}
@@ -39,20 +43,10 @@ spec:
           script: |
             #!/usr/bin/env bash
             jx gitops variables
-        - image: golang:1.15
-          name: release-binary
+        - name: release-binary
           resources: {}
-          script: |
-            #!/bin/bash
-            source .jx/variables.sh
-            make release
-        - image: jnorwood/helm-docs:latest
-          name: chart-docs
+        - name: chart-docs
           resources: {}
-          script: |
-            #!/bin/ash
-            if [ -d "/workspace/source/charts/$REPO_NAME" ]; then cd /workspace/source/charts/$REPO_NAME
-            helm-docs; else echo no charts; fi
         - image: gcr.io/jenkinsxio/builder-go:2.1.142-761
           name: changelog
           resources: {}
@@ -60,13 +54,8 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             jx step changelog --verbose --generate-yaml=false --header-file=hack/changelog-header.md --version=$VERSION --rev=$PULL_BASE_SHA --output-markdown=changelog.md --update-release=false
-        - image: gcr.io/jenkinsxio/step-go-releaser:0.0.14
-          name: upload-binaries
+        - name: upload-binaries
           resources: {}
-          script: |
-            #!/bin/bash
-            source .jx/variables.sh
-            make goreleaser
         - image: google/cloud-sdk:slim
           name: build-and-push-image
           resources: {}
@@ -74,14 +63,8 @@ spec:
             #!/bin/bash
             source .jx/variables.sh
             /workspace/source/build.sh
-        - image: gcr.io/jenkinsxio/jx-cli:latest
-          name: release-chart
+        - name: release-chart
           resources: {}
-          script: |
-            #!/bin/bash
-            if [ -d "/workspace/source/charts/$REPO_NAME" ]; then source .jx/variables.sh
-            cd /workspace/source/charts/$REPO_NAME
-            make release; else echo no charts; fi
         - image: gcr.io/jenkinsxio/builder-go:2.1.142-761
           name: promote-release
           resources: {}
