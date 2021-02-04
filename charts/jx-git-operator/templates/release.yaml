@@ -1,0 +1,69 @@
+{{- if .Capabilities.APIVersions.Has "jenkins.io/v1/Release" }}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-02-04T15:49:31Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: just use multi-arch images
+    sha: 9681a9acb7fc05b79ab841fa05e5b5364e4d5a49
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: simplify pipelines
+    sha: 155a1f324daf9caf7badf71ae6c41a3740f0a192
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: update deps
+    sha: 8c18eb9efe301ce75c6b5ec42431bcd8406e66b2
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: avoid including the git user/token in the logs
+    sha: 9252dd5b67eeb06515f2650e2ccf8db594e1c74c
+  - author:
+      email: jenkins-x@googlegroups.com
+      name: jenkins-x-bot
+    branch: master
+    committer:
+      email: jenkins-x@googlegroups.com
+      name: jenkins-x-bot
+    message: |
+      chore(deps): bump https://github.com/jenkins-x/jx-cli-base-image.git to 0.0.43
+
+      Command run was `jx step create pr regex --regex (?m)^FROM gcr.io/jenkinsxio/jx-cli-base-image:(?P<version>.*)$ --version 0.0.43 --files Dockerfile --repo https://github.com/jenkins-x/jx-git-operator.git`
+    sha: c113a4c0ce5bb97bc92b1aabd8b5682eeb8cf435
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  name: '{{ .Chart.Name }}'
+  version: 0.0.154
+status: {}
+ 
+{{- end }}
