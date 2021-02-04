@@ -1,6 +1,7 @@
 package poller
 
 import (
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -108,7 +109,8 @@ func (o *Options) Poll() error {
 
 func (o *Options) pollRepository(r repo.Repository) error {
 	name := r.Name
-	log.Logger().Infof("polling repository %s in namespace %s with git URL %s", name, r.Namespace, r.GitURL)
+	safeGitURL := stringhelpers.SanitizeURL(r.GitURL)
+	log.Logger().Infof("polling repository %s in namespace %s with git URL %s", name, r.Namespace, safeGitURL)
 
 	dir := filepath.Join(o.Dir, name)
 	exists, err := files.DirExists(dir)
