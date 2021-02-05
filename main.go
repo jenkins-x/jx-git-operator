@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/sethvargo/go-envconfig/pkg/envconfig"
+	"github.com/sethvargo/go-envconfig"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/poller"
 )
