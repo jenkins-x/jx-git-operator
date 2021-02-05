@@ -1,0 +1,36 @@
+{{- if .Capabilities.APIVersions.Has "jenkins.io/v1/Release" }}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-02-05T13:06:12Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: upgrade deps
+    sha: 429255dda4b271282a7909636392ca38059ca50c
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: noreply@github.com
+      name: GitHub
+    message: 'fix: release chart after images'
+    sha: c03192e23c55f9a4fd7f4d4e2979733ff99b897e
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  name: '{{ .Chart.Name }}'
+  version: 0.0.157
+status: {}
+ 
+{{- end }}
