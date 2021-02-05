@@ -1,0 +1,38 @@
+{{- if .Capabilities.APIVersions.Has "jenkins.io/v1/Release" }}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-02-05T11:23:24Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: noreply@github.com
+      name: GitHub
+    message: 'fix: release chart after images'
+    sha: c03192e23c55f9a4fd7f4d4e2979733ff99b897e
+  - author:
+      email: jenkins-x@googlegroups.com
+      name: jenkins-x-bot
+    branch: master
+    committer:
+      email: jenkins-x@googlegroups.com
+      name: jenkins-x-bot
+    message: |
+      chore: upgrade go dependencies
+
+      from: https://github.com/jenkins-x/jx3-versions
+    sha: 88757d328ad6346cc783b92f7036274b1dcbb0f9
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  name: '{{ .Chart.Name }}'
+  version: 0.0.156
+status: {}
+ 
+{{- end }}
