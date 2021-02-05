@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/Azure/go-autorest/autorest/adal v0.9.11 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/google/uuid v1.1.5
+	github.com/google/uuid v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jenkins-x/jx-api/v4 v4.0.24 // indirect
 	github.com/jenkins-x/jx-helpers/v3 v3.0.73
