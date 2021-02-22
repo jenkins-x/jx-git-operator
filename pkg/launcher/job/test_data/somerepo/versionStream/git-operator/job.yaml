@@ -51,6 +51,9 @@ spec:
         image: gcr.io/jenkinsxio-labs-private/jx-gitops:0.0.30
         imagePullPolicy: Always
         name: job
+        env:
+        - name: SOME_NAME
+          value: SOME_VALUE
         volumeMounts:
         - mountPath: /workspace
           name: workspace-volume

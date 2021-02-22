@@ -1,6 +1,7 @@
 package job_test
 
 import (
+	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -101,4 +102,62 @@ func TestJobLauncher(t *testing.T) {
 			t.Logf("generated gsm sidecar")
 		}
 	}
+}
+
+func TestOverlayJob(t *testing.T) {
+	vsJob := &v1.Job{}
+
+	path := filepath.Join("test_data", "somerepo", "versionStream", "git-operator", "job.yaml")
+	err := yamls.LoadFile(path, vsJob)
+	require.NoError(t, err, "failed to load file %s", path)
+
+	overlay := &v1.Job{
+		Spec: v1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name: "job",
+							Env: []corev1.EnvVar{
+								{
+									Name:  "SOME_NAME",
+									Value: "SOME_NAME_NEW_VALUE",
+								},
+								{
+									Name:  "MY_NEW_ENV",
+									Value: "MY_NEW_ENV_VALUE",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	err = job.OverlayJob(vsJob, overlay)
+	require.NoError(t, err, "failed to apply overlay")
+
+	containers := vsJob.Spec.Template.Spec.Containers
+	require.Len(t, containers, 1, "job should have 1 container")
+	container := &containers[0]
+	require.Equal(t, "job", container.Name, "container[0].Name")
+
+	env := container.Env
+
+	AssertEnvValue(t, container, "SOME_NAME", "SOME_NAME_NEW_VALUE", "job.container[0]")
+	AssertEnvValue(t, container, "MY_NEW_ENV", "MY_NEW_ENV_VALUE", "job.container[0]")
+
+	require.Len(t, env, 2, "container[0].Env")
+
+}
+
+func AssertEnvValue(t *testing.T, container *corev1.Container, envName string, expectedValue string, message string) {
+	for _, e := range container.Env {
+		if e.Name == envName {
+			assert.Equal(t, expectedValue, e.Value, "envVar %s in container: %s for %s", envName, container.Name, message)
+			return
+		}
+	}
+	assert.Fail(t, "missing envVar %s in container: %s for %s", envName, container.Name, message)
 }

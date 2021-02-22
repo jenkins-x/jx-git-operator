@@ -3,6 +3,7 @@ package job
 import (
 	"context"
 	"fmt"
+	"github.com/imdario/mergo"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
 	v1 "k8s.io/api/batch/v1"
@@ -165,6 +167,11 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 		return nil, errors.Wrapf(err, "failed to load Job file %s in repository %s", fileName, safeName)
 	}
 
+	err = c.enrichJob(ctx, opts, resource, safeName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to enrich the Job")
+	}
+
 	if !opts.NoResourceApply {
 		// now lets check if there is a resources dir
 		resourcesDir := filepath.Join(folder, "resources")
@@ -211,6 +218,85 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 	}
 	log.Logger().Infof("created Job %s in namespace %s", resourceName, ns)
 	return []runtime.Object{r2}, nil
+}
+
+func (c *client) enrichJob(ctx context.Context, opts launcher.LaunchOptions, job *v1.Job, safeName string) error {
+	path := filepath.Join(opts.Dir, ".jx", "git-operator", "job-overlay.yaml")
+	exists, err := files.FileExists(path)
+	if err != nil {
+		return errors.Wrapf(err, "failed to check for file %s", path)
+	}
+	if !exists {
+		return nil
+	}
+	overlay := &v1.Job{}
+	err = yamls.LoadFile(path, overlay)
+	if err != nil {
+		return errors.Wrapf(err, "failed to load Job file %s in repository %s", path, safeName)
+	}
+
+	err = OverlayJob(job, overlay)
+	if err != nil {
+		return errors.Wrapf(err, "failed to apply overlay from file %s to Job", path)
+	}
+	return nil
+}
+
+// OverlayJob applies the given overlay to the job
+func OverlayJob(job *v1.Job, overlay *v1.Job) error {
+	if overlay == nil {
+		return nil
+	}
+	err := mergo.Merge(job, overlay)
+	if err != nil {
+		return errors.Wrap(err, "error merging Job with overlay")
+	}
+
+	// mergeo can't handle container and env vars yet so lets help...
+	for i := range overlay.Spec.Template.Spec.Containers {
+		oc := &overlay.Spec.Template.Spec.Containers[i]
+
+		found := false
+		for j := range job.Spec.Template.Spec.Containers {
+			jc := &job.Spec.Template.Spec.Containers[j]
+			if jc.Name == oc.Name {
+				err = overlayJobContainer(jc, oc)
+				if err != nil {
+					return errors.Wrapf(err, "failed to merge overlay job container %s", oc.Name)
+				}
+				found = true
+				break
+			}
+		}
+		if !found {
+			errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
+		}
+	}
+	return nil
+}
+
+func overlayJobContainer(jc *corev1.Container, oc *corev1.Container) error {
+	err := mergo.Merge(jc, oc)
+	if err != nil {
+		return errors.Wrap(err, "error merging Container with overlay")
+	}
+	for i := range oc.Env {
+		oe := &oc.Env[i]
+
+		found := false
+		for j := range jc.Env {
+			je := &jc.Env[j]
+			if je.Name == oe.Name {
+				*je = *oe
+				found = true
+				break
+			}
+		}
+		if !found {
+			jc.Env = append(jc.Env, *oe)
+		}
+	}
+	return nil
 }
 
 func trimLength(text string, length int) string {
