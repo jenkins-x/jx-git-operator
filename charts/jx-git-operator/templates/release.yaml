@@ -1,0 +1,89 @@
+{{- if .Capabilities.APIVersions.Has "jenkins.io/v1/Release" }}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-02-24T10:51:29Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: lets annotate the job with commit information
+    sha: f81e53830c9258dd746e1e9f3e3d2cd630ea6868
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: upgrade deps
+    sha: f55338c1765b7f93b07ecf080e44f72185b909f9
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: fix failing test
+    sha: b6ea463c6f36870b63a4cbc557e43706ccd801eb
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: update deps
+    sha: 967af17a2a82c9f4846cd416259c203434d87ad4
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: disable the use of custom file names
+    sha: c839da140afe88fc92a203053c2dc4eb0e2d502f
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: allow job overlay files
+
+      so we can add override environment variables
+    sha: 7014ce4713426c1ed25d9108dfbfb2a15c438b57
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: upgrade deps
+    sha: 403b807c1fd0e921b820bba8717c8c93cae6a83e
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  name: '{{ .Chart.Name }}'
+  version: 0.0.160
+status: {}
+ 
+{{- end }}
