@@ -80,7 +80,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	}
 	safeGitURL := stringhelpers.SanitizeURL(opts.Repository.GitURL)
 	if opts.LastCommitURL == "" && opts.Repository.GitURL != "" && opts.GitSHA != "" {
-		opts.LastCommitURL = stringhelpers.UrlJoin(strings.TrimSuffix(safeGitURL, ".git"), "commits", opts.GitSHA)
+		opts.LastCommitURL = stringhelpers.UrlJoin(strings.TrimSuffix(safeGitURL, ".git"), "commit", opts.GitSHA)
 	}
 	safeName := naming.ToValidValue(opts.Repository.Name)
 	safeSha := naming.ToValidValue(opts.GitSHA)

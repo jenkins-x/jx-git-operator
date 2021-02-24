@@ -31,7 +31,7 @@ func TestJobLauncher(t *testing.T) {
 	lastCommitDate := "Wed, 24 Feb 2021 10:13:14 +0000"
 	lastCommitMessage := "fix: upgrading my app"
 	repoURL := "https://github.com/jenkins-x/fake-repository.git"
-	lastCommitURL := strings.TrimSuffix(repoURL, ".git") + "/commits/" + gitSha
+	lastCommitURL := strings.TrimSuffix(repoURL, ".git") + "/commit/" + gitSha
 
 	fs, err := ioutil.ReadDir("test_data")
 	require.NoError(t, err, "failed to load test data")
