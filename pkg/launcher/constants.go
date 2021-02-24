@@ -9,4 +9,19 @@ const (
 
 	// RerunLabelKey the label key to force this job to retrigger
 	RerunLabelKey = "git-operator.jenkins.io/rerun"
+
+	// CommitAuthorAnnotation the annotation key for the last commit author
+	CommitAuthorAnnotation = "git-operator.jenkins.io/commit-author"
+
+	// CommitAuthorEmailAnnotation the annotation key for the last commit author email
+	CommitAuthorEmailAnnotation = "git-operator.jenkins.io/commit-author-email"
+
+	// CommitDateAnnotation the annotation key for the last commit date
+	CommitDateAnnotation = "git-operator.jenkins.io/commit-date"
+
+	// CommitMessageAnnotation the annotation key for the last commit message
+	CommitMessageAnnotation = "git-operator.jenkins.io/commit-message"
+
+	// CommitURLAnnotation the annotation key for the last commit URL
+	CommitURLAnnotation = "git-operator.jenkins.io/commit-url"
 )

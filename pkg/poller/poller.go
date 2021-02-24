@@ -141,15 +141,36 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	text = strings.TrimSpace(text)
 	log.Logger().Infof("repository %s has latest commit sha %s", name, text)
 
+	commitMessage, err := gitclient.GetLatestCommitMessage(o.GitClient, dir)
+	if err != nil {
+		return errors.Wrapf(err, "failed to get the last commit message")
+	}
+	commitAuthor, err := gitclient.GetLatestCommitAuthor(o.GitClient, dir)
+	if err != nil {
+		return errors.Wrapf(err, "failed to get the last commit author")
+	}
+	commitEmail, err := gitclient.GetLatestCommitAuthorEmail(o.GitClient, dir)
+	if err != nil {
+		return errors.Wrapf(err, "failed to get the last commit author")
+	}
+	commitDate, err := gitclient.GetLatestCommitDate(o.GitClient, dir)
+	if err != nil {
+		return errors.Wrapf(err, "failed to get the last commit date")
+	}
+
 	if text == "" {
 		return errors.Errorf("could not find latest commit sha for repository %s", name)
 	}
 
 	_, err = o.Launcher.Launch(launcher.LaunchOptions{
-		Repository:      r,
-		GitSHA:          text,
-		Dir:             dir,
-		NoResourceApply: o.NoResourceApply,
+		Repository:            r,
+		GitSHA:                text,
+		LastCommitAuthor:      commitAuthor,
+		LastCommitAuthorEmail: commitEmail,
+		LastCommitDate:        commitDate,
+		LastCommitMessage:     commitMessage,
+		Dir:                   dir,
+		NoResourceApply:       o.NoResourceApply,
 	})
 	if err != nil {
 		return errors.Wrapf(err, "failed to launch job for %s", name)

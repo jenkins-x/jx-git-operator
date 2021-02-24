@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/imdario/mergo"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -76,6 +77,9 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	ns := opts.Repository.Namespace
 	if ns == "" {
 		ns = c.ns
+	}
+	if opts.LastCommitURL == "" && opts.Repository.GitURL != "" && opts.GitSHA != "" {
+		opts.LastCommitURL = stringhelpers.UrlJoin(strings.TrimSuffix(opts.Repository.GitURL, ".git"), "commits", opts.GitSHA)
 	}
 	safeName := naming.ToValidValue(opts.Repository.Name)
 	safeSha := naming.ToValidValue(opts.GitSHA)
@@ -208,12 +212,30 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 
 	resource.Name = resourceName
 
+	if resource.Annotations == nil {
+		resource.Annotations = map[string]string{}
+	}
 	if resource.Labels == nil {
 		resource.Labels = map[string]string{}
 	}
 	resource.Labels[constants.DefaultSelectorKey] = constants.DefaultSelectorValue
 	resource.Labels[launcher.RepositoryLabelKey] = safeName
 	resource.Labels[launcher.CommitShaLabelKey] = safeSha
+	if opts.LastCommitAuthor != "" {
+		resource.Annotations[launcher.CommitAuthorAnnotation] = opts.LastCommitAuthor
+	}
+	if opts.LastCommitAuthorEmail != "" {
+		resource.Annotations[launcher.CommitAuthorEmailAnnotation] = opts.LastCommitAuthorEmail
+	}
+	if opts.LastCommitDate != "" {
+		resource.Annotations[launcher.CommitDateAnnotation] = opts.LastCommitDate
+	}
+	if opts.LastCommitMessage != "" {
+		resource.Annotations[launcher.CommitMessageAnnotation] = opts.LastCommitMessage
+	}
+	if opts.LastCommitURL != "" {
+		resource.Annotations[launcher.CommitURLAnnotation] = opts.LastCommitURL
+	}
 
 	r2, err := jobInterface.Create(ctx, resource, metav1.CreateOptions{})
 	if err != nil {

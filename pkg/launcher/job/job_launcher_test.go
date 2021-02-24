@@ -4,6 +4,7 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
@@ -25,6 +26,11 @@ func TestJobLauncher(t *testing.T) {
 	repoName := "fake-repository"
 	gitURL := "https://github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
+	lastCommitAuthor := "jstrachan"
+	lastCommitAuthorEmail := "something@gmail.com"
+	lastCommitDate := "Wed, 24 Feb 2021 10:13:14 +0000"
+	lastCommitMessage := "fix: upgrading my app"
+	lastCommitURL := strings.TrimSuffix(gitURL, ".git") + "/commits/" + gitSha
 
 	fs, err := ioutil.ReadDir("test_data")
 	require.NoError(t, err, "failed to load test data")
@@ -64,8 +70,12 @@ func TestJobLauncher(t *testing.T) {
 				Namespace: ns,
 				GitURL:    gitURL,
 			},
-			GitSHA: gitSha,
-			Dir:    filepath.Join("test_data", name),
+			GitSHA:                gitSha,
+			LastCommitAuthor:      lastCommitAuthor,
+			LastCommitAuthorEmail: lastCommitAuthorEmail,
+			LastCommitDate:        lastCommitDate,
+			LastCommitMessage:     lastCommitMessage,
+			Dir:                   filepath.Join("test_data", name),
 		}
 		objects, err := client.Launch(o)
 		require.NoError(t, err, "failed to launch the job")
@@ -81,6 +91,11 @@ func TestJobLauncher(t *testing.T) {
 		testhelpers.AssertLabel(t, constants.DefaultSelectorKey, constants.DefaultSelectorValue, j1.ObjectMeta, msg)
 		testhelpers.AssertLabel(t, launcher.RepositoryLabelKey, repoName, j1.ObjectMeta, msg)
 		testhelpers.AssertLabel(t, launcher.CommitShaLabelKey, gitSha, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.CommitAuthorAnnotation, lastCommitAuthor, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.CommitAuthorEmailAnnotation, lastCommitAuthorEmail, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.CommitDateAnnotation, lastCommitDate, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.CommitMessageAnnotation, lastCommitMessage, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.CommitURLAnnotation, lastCommitURL, j1.ObjectMeta, msg)
 
 		runner.ExpectResults(t,
 			fakerunner.FakeResult{

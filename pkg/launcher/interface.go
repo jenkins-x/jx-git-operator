@@ -13,6 +13,21 @@ type LaunchOptions struct {
 	// GitSHA the latest git commit SHA of the repository
 	GitSHA string
 
+	// LastCommitMessage the latest git commit message
+	LastCommitMessage string
+
+	// LastCommitAuthor the latest git commit author
+	LastCommitAuthor string
+
+	// LastCommitAuthorEmail the latest git commit author email
+	LastCommitAuthorEmail string
+
+	// LastCommitDate the latest git commit date
+	LastCommitDate string
+
+	// LastCommitURL the URL to the last git commit
+	LastCommitURL string
+
 	// 	Dir the root directory of the git clone of the repository
 	Dir string
 
