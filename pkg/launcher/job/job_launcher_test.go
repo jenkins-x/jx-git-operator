@@ -24,13 +24,14 @@ import (
 func TestJobLauncher(t *testing.T) {
 	ns := "jx"
 	repoName := "fake-repository"
-	gitURL := "https://github.com/jenkins-x/fake-repository.git"
+	gitURL := "https://fakeuser:fakepwd@github.com/jenkins-x/fake-repository.git"
 	gitSha := "dummysha1234"
 	lastCommitAuthor := "jstrachan"
 	lastCommitAuthorEmail := "something@gmail.com"
 	lastCommitDate := "Wed, 24 Feb 2021 10:13:14 +0000"
 	lastCommitMessage := "fix: upgrading my app"
-	lastCommitURL := strings.TrimSuffix(gitURL, ".git") + "/commits/" + gitSha
+	repoURL := "https://github.com/jenkins-x/fake-repository.git"
+	lastCommitURL := strings.TrimSuffix(repoURL, ".git") + "/commits/" + gitSha
 
 	fs, err := ioutil.ReadDir("test_data")
 	require.NoError(t, err, "failed to load test data")
@@ -96,6 +97,7 @@ func TestJobLauncher(t *testing.T) {
 		testhelpers.AssertAnnotation(t, launcher.CommitDateAnnotation, lastCommitDate, j1.ObjectMeta, msg)
 		testhelpers.AssertAnnotation(t, launcher.CommitMessageAnnotation, lastCommitMessage, j1.ObjectMeta, msg)
 		testhelpers.AssertAnnotation(t, launcher.CommitURLAnnotation, lastCommitURL, j1.ObjectMeta, msg)
+		testhelpers.AssertAnnotation(t, launcher.RepositoryURLAnnotation, repoURL, j1.ObjectMeta, msg)
 
 		runner.ExpectResults(t,
 			fakerunner.FakeResult{

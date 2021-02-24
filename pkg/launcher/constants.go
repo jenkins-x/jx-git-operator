@@ -24,4 +24,7 @@ const (
 
 	// CommitURLAnnotation the annotation key for the last commit URL
 	CommitURLAnnotation = "git-operator.jenkins.io/commit-url"
+
+	// RepositoryURLAnnotation the annotation key for the repository URL
+	RepositoryURLAnnotation = "git-operator.jenkins.io/repo-url"
 )

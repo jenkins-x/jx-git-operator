@@ -78,8 +78,9 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 	if ns == "" {
 		ns = c.ns
 	}
+	safeGitURL := stringhelpers.SanitizeURL(opts.Repository.GitURL)
 	if opts.LastCommitURL == "" && opts.Repository.GitURL != "" && opts.GitSHA != "" {
-		opts.LastCommitURL = stringhelpers.UrlJoin(strings.TrimSuffix(opts.Repository.GitURL, ".git"), "commits", opts.GitSHA)
+		opts.LastCommitURL = stringhelpers.UrlJoin(strings.TrimSuffix(safeGitURL, ".git"), "commits", opts.GitSHA)
 	}
 	safeName := naming.ToValidValue(opts.Repository.Name)
 	safeSha := naming.ToValidValue(opts.GitSHA)
@@ -115,7 +116,7 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 			log.Logger().Infof("not creating a Job in namespace %s for repo %s sha %s yet as there is an active job %s", ns, safeName, safeSha, activeJobs[0].Name)
 			return nil, nil
 		}
-		return c.startNewJob(ctx, opts, jobInterface, ns, safeName, safeSha)
+		return c.startNewJob(ctx, opts, jobInterface, ns, safeName, safeSha, safeGitURL)
 	}
 	return nil, nil
 }
@@ -126,7 +127,7 @@ func IsJobActive(r v1.Job) bool {
 }
 
 // startNewJob lets create a new Job resource
-func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha string) ([]runtime.Object, error) {
+func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha, safeGitURL string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
 	// lets see if we are using a version stream to store the git operator configuration
@@ -235,6 +236,9 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 	}
 	if opts.LastCommitURL != "" {
 		resource.Annotations[launcher.CommitURLAnnotation] = opts.LastCommitURL
+	}
+	if safeGitURL != "" {
+		resource.Annotations[launcher.RepositoryURLAnnotation] = safeGitURL
 	}
 
 	r2, err := jobInterface.Create(ctx, resource, metav1.CreateOptions{})
