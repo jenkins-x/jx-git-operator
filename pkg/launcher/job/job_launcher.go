@@ -6,6 +6,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -140,19 +141,21 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 	}
 
 	jobFileName := "job.yaml"
-	fileNamePath := filepath.Join(opts.Dir, ".jx", "git-operator", "filename.txt")
-	exists, err = files.FileExists(fileNamePath)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to check for file %s", fileNamePath)
-	}
-	if exists {
-		data, err := ioutil.ReadFile(fileNamePath)
+	if os.Getenv("JX_CUSTOM_FILE") == "true" {
+		fileNamePath := filepath.Join(opts.Dir, ".jx", "git-operator", "filename.txt")
+		exists, err = files.FileExists(fileNamePath)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to load file %s", fileNamePath)
+			return nil, errors.Wrapf(err, "failed to check for file %s", fileNamePath)
 		}
-		jobFileName = strings.TrimSpace(string(data))
-		if jobFileName == "" {
-			return nil, errors.Errorf("the job name file %s is empty", fileNamePath)
+		if exists {
+			data, err := ioutil.ReadFile(fileNamePath)
+			if err != nil {
+				return nil, errors.Wrapf(err, "failed to load file %s", fileNamePath)
+			}
+			jobFileName = strings.TrimSpace(string(data))
+			if jobFileName == "" {
+				return nil, errors.Errorf("the job name file %s is empty", fileNamePath)
+			}
 		}
 	}
 
