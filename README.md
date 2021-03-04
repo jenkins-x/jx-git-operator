@@ -1,5 +1,12 @@
 ## jx-git-operator
 
+[![Documentation](https://godoc.org/github.com/jenkins-x/jx-git-operator?status.svg)](https://pkg.go.dev/mod/github.com/jenkins-x/jx-git-operator)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jenkins-x/jx-git-operator)](https://goreportcard.com/report/github.com/jenkins-x/jx-git-operator)
+[![Releases](https://img.shields.io/github/release-pre/jenkins-x/jx-git-operator.svg)](https://github.com/jenkins-x/jx-git-operator/releases)
+[![LICENSE](https://img.shields.io/github/license/jenkins-x/jx-git-operator.svg)](https://github.com/jenkins-x/jx-git-operator/blob/master/LICENSE)
+[![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://slack.k8s.io/)
+
+
 `jx-git-operator` is an operator which polls a git repository for changes and triggers a Kubernetes `Job` to process the changes in git.
 
 The definition of the `Job` is defined in the git repository leaving you free to trigger any kind of `Job` you like. e.g. use `kubectl apply` if you wish or `helm install` or `kustomize` or whatever. 
