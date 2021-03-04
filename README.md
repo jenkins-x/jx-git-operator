@@ -1,10 +1,10 @@
 ## jx-git-operator
 
-`jx-git-operator` is an operator which polls a git repository for changes and triggers a Kubernetes `Job` to process changes in git.
+`jx-git-operator` is an operator which polls a git repository for changes and triggers a Kubernetes `Job` to process the changes in git.
 
 The definition of the `Job` is defined in the git repository leaving you free to trigger any kind of `Job` you like. e.g. use `kubectl apply` if you wish or `helm install` or `kustomize` or whatever. 
 
-The `jx-git-operator` is small with a minimal footprint and has no dependencies so can be used to install/upgrade/configure anything you like in any cluster.
+The `jx-git-operator` is small with a minimal footprint and has no dependencies so can be used to install/upgrade/configure anything you like in any cluster. e.g. use it to setup tools like tekton, istio, knative, nginx etc.
 
 It can be used to install/upgrade any environment (development, staging, production) via a GitOps approach using any set of tools you like ([helm](https://helm.sh/), [helmfile](https://github.com/roboll/helmfile), [jx](https://github.com/jenkins-x/jx-cli/releases),  [kapp](https://get-kapp.io/), [kpt](https://googlecontainertools.github.io/kpt/), [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/), [kustomize](https://kustomize.io/) etc).
 
