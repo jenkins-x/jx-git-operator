@@ -1,0 +1,37 @@
+{{- if .Capabilities.APIVersions.Has "jenkins.io/v1/Release" }}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-03-04T07:13:10Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: add badges
+    sha: 8a37e5f9751c833ad23786836e68610d1b549c29
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      chore: polish docs
+    sha: 1482f8710c1c23bf83dcac7b2f098d640d087abf
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  name: '{{ .Chart.Name }}'
+  version: 0.0.167
+status: {}
+ 
+{{- end }}
