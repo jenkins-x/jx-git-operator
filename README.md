@@ -38,8 +38,6 @@ Note that if you are using [terraform](https://www.terraform.io/) using a Jenkin
 
 To install the git operator by hand using [helm 3](https://helm.sh/) then try:
 
-Setup a namespace:
-
 ```bash 
 helm repo add jx3 https://storage.googleapis.com/jenkinsxio/charts
 helm upgrade --install \
