@@ -8,7 +8,7 @@ The `jx-git-operator` is small with a minimal footprint and has no dependencies 
 
 It can be used to install/upgrade any environment (development, staging, production) via a GitOps approach using any set of tools you like ([helm](https://helm.sh/), [helmfile](https://github.com/roboll/helmfile), [jx](https://github.com/jenkins-x/jx-cli/releases),  [kapp](https://get-kapp.io/), [kpt](https://googlecontainertools.github.io/kpt/), [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/), [kustomize](https://kustomize.io/) etc).
 
-You are in full control over exactly what the `Job` does in each cluster.   
+You are in full control over exactly what the `Job` does in each cluster - its GitOps all the way down ;).   
 
 ### How it works
 
