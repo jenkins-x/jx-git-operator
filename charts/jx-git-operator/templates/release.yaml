@@ -1,0 +1,55 @@
+{{- if and (.Capabilities.APIVersions.Has "jenkins.io/v1/Release") (hasKey .Values.jx "releaseCRD") (.Values.jx.releaseCRD)}}
+apiVersion: jenkins.io/v1
+kind: Release
+metadata:
+  creationTimestamp: "2021-03-30T13:15:35Z"
+  deletionTimestamp: null
+  name: '{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}'
+spec:
+  commits:
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    issueIds:
+    - "158"
+    message: |
+      fix: better support for numeric git username
+
+      fixes #158
+    sha: 9d7f953b02e04322ab282cf6bcd4787fddc05e6e
+  - author:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    branch: master
+    committer:
+      email: james.strachan@gmail.com
+      name: James Strachan
+    message: |
+      fix: add quotes around the OCI secret values
+    sha: 4858b98f4522121fb2a1e32fb2a2a66bc0a2c6f2
+  gitHttpUrl: https://github.com/jenkins-x/jx-git-operator
+  gitOwner: jenkins-x
+  gitRepository: jx-git-operator
+  issues:
+  - body: "I have encountered an issue with the `jx-git-operator/templates/secret.yaml`
+      file when taking in an Integer as the username, it will return\r\n `Error: UPGRADE
+      FAILED: template: jx-git-operator/templates/secret.yaml:11:35: executing \"jx-git-operator/templates/secret.yaml\"
+      at <b64enc>: wrong type for value; expected string; got int64`\r\n\r\nWhich
+      can be reproduced by running\r\n```\r\njx admin operator --username 12345 --token
+      abcde\r\n```\r\nAfter having done some research I've found a solution with a
+      simple fix of adding `toString` to the field\r\n```\r\nusername: \"{{ .Values.username
+      | toString | b64enc }}\"\r\n```"
+    creationTimestamp: "2021-03-30T06:23:55Z"
+    id: "158"
+    state: closed
+    title: Allow integer type for Git username
+    url: https://github.com/jenkins-x/jx-git-operator/issues/158
+  name: '{{ .Chart.Name }}'
+  version: 0.0.169
+status: {}
+ 
+{{- end }}
