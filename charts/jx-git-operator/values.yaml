@@ -69,3 +69,8 @@ ociRegistries: []
 # jxBootSecrets:
 #   secretKey: secretValue
 jxBootJobEnvVarSecrets: {}
+
+# optional list of image pull secrets to use to pull images
+jx:
+  # whether to create a Release CRD when installing charts with Release CRDs included
+  releaseCRD: false
