@@ -1,0 +1,37 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/jenkins-x/jx-helpers/v3
+    versions:
+    - 3.0.72
+    - 3.0.73
+    - 3.0.76
+    - 3.0.77
+    - 3.0.86
+    - 3.0.88
+  - dependency-name: k8s.io/apimachinery
+    versions:
+    - 0.20.3
+    - 0.20.4
+  - dependency-name: k8s.io/api
+    versions:
+    - 0.20.3
+    - 0.20.4
+  - dependency-name: github.com/stretchr/testify
+    versions:
+    - 1.7.0
+  - dependency-name: github.com/google/uuid
+    versions:
+    - 1.2.0
+  - dependency-name: github.com/sethvargo/go-envconfig
+    versions:
+    - 0.3.2
+  - dependency-name: github.com/jenkins-x/jx-kube-client/v3
+    versions:
+    - 3.0.2
