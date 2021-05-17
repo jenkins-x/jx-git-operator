@@ -45,9 +45,6 @@ envFrom:
     optional: true
 
 
-# an object of optional boot env vars which are used to populate the jx-boot-job-env-vars Secret
-bootEnvVar: {}
-
 # a map of annotations to add to the pod
 podAnnotations: {}
 
