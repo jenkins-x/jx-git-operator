@@ -39,7 +39,14 @@ env:
   POLL_DURATION: "20s"
 
 # define environment variables from here as a map of key: value
-envFrom: []
+envFrom:
+- secretRef:
+    name: jx-boot-job-env-vars
+    optional: true
+
+
+# an object of optional boot env vars which are used to populate the jx-boot-job-env-vars Secret
+bootEnvVar: {}
 
 # a map of annotations to add to the pod
 podAnnotations: {}
