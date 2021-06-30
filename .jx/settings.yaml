@@ -1,0 +1,8 @@
+apiVersion: core.jenkins-x.io/v4beta1
+kind: Settings
+spec:
+  destination:
+    chartRepository: https://github.com/jenkins-x-charts/repo.git
+    chartKind: pages
+    registry: ghcr.io
+    dockerRegistryOrg: jenkins-x
