@@ -3,6 +3,7 @@ package poller_test
 import (
 	"context"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
