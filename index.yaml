@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  jx-git-operator:
+  - apiVersion: v2
+    appVersion: 0.0.88
+    created: "2021-06-30T13:20:07.542250517Z"
+    description: A Helm chart for Kubernetes
+    digest: 644ec66f947fa622ba5fe7f10bf8d092576489388ad089c5b0fe5e1a2c92d4fd
+    icon: https://avatars2.githubusercontent.com/u/47602533
+    name: jx-git-operator
+    type: application
+    urls:
+    - jx-git-operator-0.0.189.tgz
+    version: 0.0.189
+generated: "2021-06-30T13:20:07.541422969Z"
