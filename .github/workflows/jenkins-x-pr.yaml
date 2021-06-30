@@ -1,0 +1,42 @@
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      name: jx-variables
+      uses: docker://gcr.io/jenkinsxio/jx-boot:3.1.170
+      with:
+        args: gitops variables
+        entrypoint: jx
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      name: build-make-linux
+      uses: docker://golang:1.15
+      with:
+        args: -c "make linux"
+        entrypoint: /bin/sh
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      name: build-make-test
+      uses: docker://golang:1.15
+      with:
+        args: -c "make test"
+        entrypoint: /bin/sh
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+"on":
+  push:
+    branches-ignore:
+    - main
+    - master
