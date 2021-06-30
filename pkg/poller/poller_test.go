@@ -22,6 +22,9 @@ import (
 )
 
 func TestPoller(t *testing.T) {
+	if os.Getenv("GITHUB_ACTION") != "" {
+		t.Skip("Skipping testing in CI environment")
+	}
 	ns := "jx"
 	ctx := context.Background()
 	repoName := "fake-repository"
