@@ -3,6 +3,7 @@ package poller_test
 import (
 	"context"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -22,8 +23,8 @@ import (
 )
 
 func TestPoller(t *testing.T) {
-	if os.Getenv("GITHUB_ACTION") != "" {
-		t.Skip("Skipping testing in CI environment")
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("Skipping testing in GH Actions environment")
 	}
 	ns := "jx"
 	ctx := context.Background()
@@ -139,6 +140,9 @@ func assertHasJobCountForRepoAndSha(t *testing.T, ctx context.Context, kubeClien
 }
 
 func TestLazyCreatePoller(t *testing.T) {
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("Skipping testing in GH Actions environment")
+	}
 	p := &poller.Options{}
 
 	err := p.ValidateOptions()
