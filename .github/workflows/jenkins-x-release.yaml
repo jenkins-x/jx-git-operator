@@ -3,20 +3,20 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
       with:
-        fetch-depth: "0"
+        fetch-depth: 0
         token: ${{ secrets.GIT_BOT_TOKEN }}
-    - uses: fusion-engineering/setup-git-credentials@v2
+    - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+    - uses: fregante/setup-git-user@v1
+
+    - name: prep
+      uses: jenkins-x-plugins/jx-release-version@v2.4.13
       with:
-        credentials: ${{ format('https://x-access-token:{0}@github.com/', secrets.GIT_BOT_TOKEN) }}
-    - id: prep
-      name: Set the release version
-      uses: docker://ghcr.io/jenkins-x/jx-release-version:2.4.13
-      with:
-        args: -c "echo ::set-output name=version::$(jx-release-version)"
-        entrypoint: bash
+        tag: true
+        github-token: ${{ secrets.GIT_BOT_TOKEN }}
+
     - env:
         GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
         VERSION: ${{ steps.prep.outputs.version}}

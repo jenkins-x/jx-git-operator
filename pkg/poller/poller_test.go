@@ -3,6 +3,7 @@ package poller_test
 import (
 	"context"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -22,7 +23,7 @@ import (
 )
 
 func TestPoller(t *testing.T) {
-	if os.Getenv("GITHUB_ACTION") != "" {
+	if os.Getenv("CI") == "true" {
 		t.Skip("Skipping testing in CI environment")
 	}
 	ns := "jx"
