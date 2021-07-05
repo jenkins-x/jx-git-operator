@@ -18,7 +18,7 @@ rbac:
   strict: false
 
 image:
-  repository: gcr.io/jenkinsxio/jx-git-operator
+  repository: ghcr.io/jenkins-x/jx-git-operator
   tag: "latest"
   pullPolicy: IfNotPresent
 
