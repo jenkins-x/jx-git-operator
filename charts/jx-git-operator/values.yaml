@@ -22,7 +22,21 @@ image:
   tag: "latest"
   pullPolicy: IfNotPresent
 
+gitops-image:
+  repository: ghcr.io/jenkins-x/jx-boot
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  version: {Lastrinatchangeversion}
+  schedule: "0/30 */3 * * *"
+  extraArgs: ["--namespace", "jx-git-operator"]
+
 replicaCount: 1
+
+gc:
+  jobs:
+    schedule: "0/30 */3 * * *"
+    # extraArgs: ["--release-age", "12h0m0s"] will run jx gitops gc activities --release-age 12h0m0s
+    extraArgs: ["--namespace", "jx-git-operator"]
 
 nameOverride: ""
 fullnameOverride: ""

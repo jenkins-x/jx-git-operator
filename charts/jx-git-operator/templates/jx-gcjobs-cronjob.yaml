@@ -1,0 +1,46 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: jx-gcjobs
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  schedule: {{ .Values.gc.jobs.schedule | quote }}
+  startingDeadlineSeconds: 4000
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: gcjobs
+            release: jxboot-helmfile-resources
+{{- if .Values.gc.jobs.annotations }}
+          annotations:
+{{ toYaml .Values.gc.jobs.annotations | indent 12 }}
+{{- end }}
+        spec:
+          restartPolicy: Never
+          serviceAccountName: jx-gcjobs
+          containers:
+            - name: gcjobs
+              command: [jx]
+              args:
+                - gitops
+                - gc
+                - jobs
+            {{- if .Values.gc.jobs.extraArgs }}
+              {{- range .Values.gc.jobs.extraArgs }}
+                - {{.}}
+              {{- end }}
+            {{- end}}
+              imagePullPolicy: IfNotPresent
+              image: "ghcr.io/jenkins-x/jx-boot:{{ .Values.versions.jx }}"
+              env:
+                - name: JX_LOG_FORMAT
+                  value: json
+                - name: JX_LOG_LEVEL
+                  value: info
+                - name: PIPELINE_KIND
+                  value: dummy
+              resources: {}

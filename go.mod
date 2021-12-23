@@ -16,6 +16,7 @@ require (
 	github.com/sirupsen/logrus v1.7.1 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/api v0.20.6
 	k8s.io/apimachinery v0.20.6
 	k8s.io/client-go v11.0.0+incompatible
