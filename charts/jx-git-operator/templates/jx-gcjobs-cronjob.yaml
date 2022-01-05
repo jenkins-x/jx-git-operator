@@ -21,7 +21,7 @@ spec:
 {{- end }}
         spec:
           restartPolicy: Never
-          serviceAccountName: jx-gcjobs
+          serviceAccountName: "{{ .Values.serviceAccount.name | default "jx-git-operator" }}"
           containers:
             - name: gcjobs
               command: [jx]

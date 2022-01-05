@@ -22,15 +22,11 @@ image:
   tag: "latest"
   pullPolicy: IfNotPresent
 
-gitops-image:
-  repository: ghcr.io/jenkins-x/jx-boot
-  tag: "latest"
-  pullPolicy: IfNotPresent
-  version: {Lastrinatchangeversion}
-  schedule: "0/30 */3 * * *"
-  extraArgs: ["--namespace", "jx-git-operator"]
-
 replicaCount: 1
+
+versions:
+  # jx is the version of the jx-boot image
+  jx: 3.2.238
 
 gc:
   jobs:
