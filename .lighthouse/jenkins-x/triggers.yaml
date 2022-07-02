@@ -4,7 +4,7 @@ spec:
   presubmits:
   - name: pr
     context: "pr"
-    always_run: false
+    always_run: true
     optional: false
     trigger: "/test"
     rerun_command: "/retest"

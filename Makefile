@@ -8,8 +8,7 @@ REV := $(shell git rev-parse --short HEAD 2> /dev/null || echo 'unknown')
 ROOT_PACKAGE := github.com/$(ORG_REPO)
 BRANCH     := $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null  || echo 'unknown')
 BUILD_DATE := $(shell date +%Y%m%d-%H:%M:%S)
-#GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
-GO_VERSION := 1.13
+GO_VERSION := 1.17.11
 
 GO := GO111MODULE=on go
 BUILD_TARGET = build
