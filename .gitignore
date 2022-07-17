@@ -24,3 +24,5 @@ vendor/
 # Goreleaser
 dist/
 
+# vscode
+.vscode

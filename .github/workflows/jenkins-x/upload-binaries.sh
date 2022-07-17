@@ -3,6 +3,9 @@
 echo "HOME is $HOME"
 echo current git configuration
 
+# See https://github.com/actions/checkout/issues/766
+git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
 git config --global --get user.name
 git config --global --get user.email
 
@@ -19,7 +22,7 @@ git push origin v$VERSION
 export BRANCH=$(git rev-parse --abbrev-ref HEAD)
 export BUILDDATE=$(date)
 export REV=$(git rev-parse HEAD)
-export GOVERSION="1.15"
+export GOVERSION="1.17.11"
 export ROOTPACKAGE="github.com/$REPOSITORY"
 
 goreleaser release
