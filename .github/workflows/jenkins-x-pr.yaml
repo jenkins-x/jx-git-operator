@@ -7,7 +7,7 @@ jobs:
     - env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       name: jx-variables
-      uses: docker://gcr.io/jenkinsxio/jx-boot:3.1.170
+      uses: docker://ghcr.io/jenkins-x/jx-boot:3.3.4
       with:
         args: gitops variables
         entrypoint: jx
