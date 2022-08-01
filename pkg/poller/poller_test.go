@@ -101,6 +101,7 @@ func TestPoller(t *testing.T) {
 
 	job := oldJobs[0]
 	job.Status.Succeeded = 1
+	job.Status.Conditions = []v1.JobCondition{{Status: corev1.ConditionTrue, Type: v1.JobComplete}}
 	_, err = kubeClient.BatchV1().Jobs(ns).Update(ctx, &job, metav1.UpdateOptions{})
 	require.NoError(t, err, "failed to update the job %s in namespace %s to succeeded", job.Name, ns)
 

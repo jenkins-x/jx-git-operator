@@ -3,12 +3,13 @@ package job
 import (
 	"context"
 	"fmt"
-	"github.com/imdario/mergo"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/imdario/mergo"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 
 	"github.com/google/uuid"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
@@ -122,7 +123,12 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 
 // IsJobActive returns true if the job has not completed or terminated yet
 func IsJobActive(r v1.Job) bool {
-	return r.Status.Succeeded == 0 && r.Status.Failed == 0
+	for _, con := range r.Status.Conditions {
+		if con.Status == corev1.ConditionTrue {
+			return false
+		}
+	}
+	return true
 }
 
 // startNewJob lets create a new Job resource
