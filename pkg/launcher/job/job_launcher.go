@@ -303,7 +303,7 @@ func OverlayJob(job *v1.Job, overlay *v1.Job) error {
 			}
 		}
 		if !found {
-			errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
+			return errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
 		}
 	}
 	return nil
