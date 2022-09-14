@@ -26,3 +26,11 @@ dist/
 
 # vscode
 .vscode
+
+
+
+# docker credential binaries
+docker-credential-*
+
+# sbom json created by syft
+sbom.json
