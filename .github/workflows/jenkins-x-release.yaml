@@ -22,7 +22,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
         VERSION: ${{ steps.prep.outputs.version }}
       name: release-binary
-      uses: docker://golang:1.17.11
+      uses: docker://golang:1.18.6
       with:
         args: -c "make release"
         entrypoint: bash

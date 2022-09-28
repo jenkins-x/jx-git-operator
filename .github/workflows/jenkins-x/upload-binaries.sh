@@ -22,7 +22,7 @@ git push origin v$VERSION
 export BRANCH=$(git rev-parse --abbrev-ref HEAD)
 export BUILDDATE=$(date)
 export REV=$(git rev-parse HEAD)
-export GOVERSION="1.17.11"
+export GOVERSION="1.18.6"
 export ROOTPACKAGE="github.com/$REPOSITORY"
 
 # Install syft
