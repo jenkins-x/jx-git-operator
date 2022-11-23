@@ -7,7 +7,7 @@ require (
 	github.com/imdario/mergo v0.3.12
 	github.com/jenkins-x/jx-helpers/v3 v3.3.1
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.3
-	github.com/jenkins-x/jx-logging/v3 v3.0.9
+	github.com/jenkins-x/jx-logging/v3 v3.0.11
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-envconfig v0.3.5
 	github.com/stretchr/testify v1.7.0
