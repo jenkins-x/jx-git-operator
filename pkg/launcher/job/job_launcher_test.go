@@ -1,11 +1,12 @@
 package job_test
 
 import (
-	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
@@ -33,7 +34,7 @@ func TestJobLauncher(t *testing.T) {
 	repoURL := "https://github.com/jenkins-x/fake-repository.git"
 	lastCommitURL := strings.TrimSuffix(repoURL, ".git") + "/commit/" + gitSha
 
-	fs, err := ioutil.ReadDir("test_data")
+	fs, err := os.ReadDir("test_data")
 	require.NoError(t, err, "failed to load test data")
 
 	for _, f := range fs {
