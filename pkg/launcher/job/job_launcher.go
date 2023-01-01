@@ -3,7 +3,6 @@ package job
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -154,7 +153,7 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 			return nil, errors.Wrapf(err, "failed to check for file %s", fileNamePath)
 		}
 		if exists {
-			data, err := ioutil.ReadFile(fileNamePath)
+			data, err := os.ReadFile(fileNamePath)
 			if err != nil {
 				return nil, errors.Wrapf(err, "failed to load file %s", fileNamePath)
 			}

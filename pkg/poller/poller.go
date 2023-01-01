@@ -1,7 +1,7 @@
 package poller
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -208,7 +208,7 @@ func (o *Options) ValidateOptions() error {
 		}
 	}
 	if o.Dir == "" {
-		o.Dir, err = ioutil.TempDir("", "jx-git-operator-")
+		o.Dir, err = os.MkdirTemp("", "jx-git-operator-")
 		if err != nil {
 			return errors.Wrapf(err, "failed to create temp dir")
 		}
