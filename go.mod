@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/google/uuid v1.2.0
-	github.com/imdario/mergo v0.3.13
+	github.com/imdario/mergo v0.3.16
 	github.com/jenkins-x/jx-helpers/v3 v3.3.1
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.3
 	github.com/jenkins-x/jx-logging/v3 v3.0.11
@@ -64,7 +64,7 @@ require (
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.9.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20211109043538-20434351676c // indirect
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
