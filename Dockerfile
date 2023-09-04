@@ -9,7 +9,7 @@ ARG TARGETOS
 LABEL maintainer="jenkins-x"
 
 # kubectl
-ENV KUBECTL_VERSION 1.23.16
+ENV KUBECTL_VERSION 1.25.13
 
 # see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
 RUN echo using kubectl version ${KUBECTL_VERSION} and OS ${TARGETOS} arch ${TARGETARCH} && \
