@@ -62,6 +62,8 @@ bootServiceAccount:
   enabled: false
   annotations: {}
 
+priorityClassName: null
+
 # a list of ociRegistry credentials for use by helmfile where name is the registry name referenced by helmfile
 # ociRegistries:
 # - name: jxdev

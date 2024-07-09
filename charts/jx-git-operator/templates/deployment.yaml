@@ -42,3 +42,6 @@ spec:
 {{ toYaml .Values.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       serviceAccountName: "{{ .Values.serviceAccount.name | default "jx-git-operator" }}"
+{{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
+{{- end }}
