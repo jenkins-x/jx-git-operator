@@ -40,5 +40,8 @@ spec:
 {{ toYaml .Values.envFrom | indent 10 }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
+{{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+{{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       serviceAccountName: "{{ .Values.serviceAccount.name | default "jx-git-operator" }}"
