@@ -1,20 +1,19 @@
 package repo
 
 import (
+	"fmt"
 	"net/url"
-
-	"github.com/pkg/errors"
 )
 
 // AddGitURLUserPassword combines the optional username and password to make a git url for cloning git
-func AddGitURLUserPassword(rawurl string, username string, password string) (string, error) {
+func AddGitURLUserPassword(rawurl, username, password string) (string, error) {
 	if username == "" && password == "" {
 		return rawurl, nil
 	}
 
 	u, err := url.Parse(rawurl)
 	if err != nil {
-		return rawurl, errors.Wrapf(err, "failed to parse git URL %s", rawurl)
+		return rawurl, fmt.Errorf("failed to parse git URL %s: %w", rawurl, err)
 	}
 
 	user := u.User

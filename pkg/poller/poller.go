@@ -1,6 +1,7 @@
 package poller
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,7 +20,7 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient/cli"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-	"github.com/pkg/errors"
+
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -61,7 +62,7 @@ type Options struct {
 func (o *Options) Run() error {
 	err := o.ValidateOptions()
 	if err != nil {
-		return errors.Wrap(err, "invalid options")
+		return fmt.Errorf("invalid options: %w", err)
 	}
 
 	if o.Namespace != "" {
@@ -87,12 +88,12 @@ func (o *Options) Run() error {
 func (o *Options) Poll() error {
 	err := o.ValidateOptions()
 	if err != nil {
-		return errors.Wrap(err, "invalid options")
+		return fmt.Errorf("invalid options: %w", err)
 	}
 
 	repos, err := o.RepoClient.List()
 	if err != nil {
-		return errors.Wrapf(err, "failed to list repositories")
+		return fmt.Errorf("failed to list repositories: %w", err)
 	}
 
 	if len(repos) == 0 {
@@ -102,7 +103,7 @@ func (o *Options) Poll() error {
 	for _, r := range repos {
 		err = o.pollRepository(r)
 		if err != nil {
-			return errors.Wrapf(err, "failed to poll repository %s in namespace %s", r.Name, r.Namespace)
+			return fmt.Errorf("failed to poll repository %s in namespace %s: %w", r.Name, r.Namespace, err)
 		}
 	}
 	return nil
@@ -116,13 +117,13 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	dir := filepath.Join(o.Dir, name)
 	exists, err := files.DirExists(dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to check dir exists %s", dir)
+		return fmt.Errorf("failed to check dir exists %s: %w", dir, err)
 	}
 	if !exists {
 		log.Logger().Infof("cloning repository %s to %s", name, dir)
 		_, err = o.GitClient.Command(o.Dir, "clone", r.GitURL, dir)
 		if err != nil {
-			return errors.Wrapf(err, "failed to clone repository %s", name)
+			return fmt.Errorf("failed to clone repository %s: %w", name, err)
 		}
 	} else {
 		if o.Branch == "" {
@@ -136,38 +137,38 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		}
 		_, err = o.GitClient.Command(dir, "pull", "origin", o.Branch)
 		if err != nil {
-			return errors.Wrapf(err, "failed to pull repository %s", name)
+			return fmt.Errorf("failed to pull repository %s: %w", name, err)
 		}
 	}
 	text, err := o.GitClient.Command(dir, "rev-parse", "HEAD")
 	if err != nil {
-		return errors.Wrapf(err, "failed to find latest commit sha for repository %s", name)
+		return fmt.Errorf("failed to find latest commit sha for repository %s: %w", name, err)
 	}
 	text = strings.TrimSpace(text)
 	log.Logger().Infof("repository %s has latest commit sha %s", name, text)
 
 	commitMessage, err := gitclient.GetLatestCommitMessage(o.GitClient, dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to get the last commit message")
+		return fmt.Errorf("failed to get the last commit message: %w", err)
 	}
 	commitAuthor, err := gitclient.GetLatestCommitAuthor(o.GitClient, dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to get the last commit author")
+		return fmt.Errorf("failed to get the last commit author: %w", err)
 	}
 	commitEmail, err := gitclient.GetLatestCommitAuthorEmail(o.GitClient, dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to get the last commit author")
+		return fmt.Errorf("failed to get the last commit author: %w", err)
 	}
 	commitDate, err := gitclient.GetLatestCommitDate(o.GitClient, dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to get the last commit date")
+		return fmt.Errorf("failed to get the last commit date: %w", err)
 	}
 
 	if text == "" {
-		return errors.Errorf("could not find latest commit sha for repository %s", name)
+		return fmt.Errorf("could not find latest commit sha for repository %s", name)
 	}
 
-	_, err = o.Launcher.Launch(launcher.LaunchOptions{
+	_, err = o.Launcher.Launch(&launcher.LaunchOptions{
 		Repository:            r,
 		GitSHA:                text,
 		LastCommitAuthor:      commitAuthor,
@@ -178,7 +179,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		NoResourceApply:       o.NoResourceApply,
 	})
 	if err != nil {
-		return errors.Wrapf(err, "failed to launch job for %s", name)
+		return fmt.Errorf("failed to launch job for %s: %w", name, err)
 	}
 	return nil
 }
@@ -198,19 +199,19 @@ func (o *Options) ValidateOptions() error {
 	if o.RepoClient == nil {
 		o.RepoClient, err = secret.NewClient(o.KubeClient, o.Namespace, constants.DefaultSelector)
 		if err != nil {
-			return errors.Wrapf(err, "failed to create repo client")
+			return fmt.Errorf("failed to create repo client: %w", err)
 		}
 	}
 	if o.Launcher == nil {
 		o.Launcher, err = job.NewLauncher(o.KubeClient, o.Namespace, constants.DefaultSelector, o.CommandRunner)
 		if err != nil {
-			return errors.Wrapf(err, "failed to create launcher")
+			return fmt.Errorf("failed to create launcher: %w", err)
 		}
 	}
 	if o.Dir == "" {
 		o.Dir, err = os.MkdirTemp("", "jx-git-operator-")
 		if err != nil {
-			return errors.Wrapf(err, "failed to create temp dir")
+			return fmt.Errorf("failed to create temp dir: %w", err)
 		}
 	}
 	return nil
