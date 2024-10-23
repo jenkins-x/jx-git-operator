@@ -77,12 +77,12 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(ctx, t, kubeClient, ns, repoName, gitSha, 1)
 
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(ctx, t, kubeClient, ns, repoName, gitSha, 1)
 
 	// now lets do a new commit
 	firstGitSha := gitSha
@@ -92,8 +92,8 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	oldJobs := assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, firstGitSha, 1)
-	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 0)
+	oldJobs := assertHasJobCountForRepoAndSha(ctx, t, kubeClient, ns, repoName, firstGitSha, 1)
+	assertHasJobCountForRepoAndSha(ctx, t, kubeClient, ns, repoName, gitSha, 0)
 
 	// now lets make the first job as completed
 	require.Len(t, oldJobs, 1, "should have one job for the old git commit")
@@ -107,14 +107,15 @@ func TestPoller(t *testing.T) {
 	err = p.Run()
 	require.NoError(t, err, "failed to run poller")
 
-	assertHasJobCountForRepoAndSha(t, ctx, kubeClient, ns, repoName, gitSha, 1)
+	assertHasJobCountForRepoAndSha(ctx, t, kubeClient, ns, repoName, gitSha, 1)
 
 	for _, c := range runner.OrderedCommands {
 		t.Logf("created command: %s\n", c.CLI())
 	}
 }
 
-func assertHasJobCountForRepoAndSha(t *testing.T, ctx context.Context, kubeClient kubernetes.Interface, ns string, repoName string, sha string, expectedCount int) []v1.Job {
+//nolint:unparam
+func assertHasJobCountForRepoAndSha(ctx context.Context, t *testing.T, kubeClient kubernetes.Interface, ns, repoName, sha string, expectedCount int) []v1.Job {
 	selector := constants.DefaultSelectorKey
 	jobs, err := kubeClient.BatchV1().Jobs(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: selector,
@@ -123,7 +124,8 @@ func assertHasJobCountForRepoAndSha(t *testing.T, ctx context.Context, kubeClien
 	require.NotNil(t, jobs, "no JobsList object returned for namespace %s with selector %s", ns, selector)
 
 	count := 0
-	for _, j := range jobs.Items {
+	for i := range jobs.Items {
+		j := jobs.Items[i]
 		name := j.Name
 		labels := j.Labels
 		if labels == nil {

@@ -12,9 +12,7 @@ BUILD_DATE := $(shell date +%Y%m%d-%H:%M:%S)
 # This does not reflect the go binary version which was used to build the jx binary, and also does not reflect the version in the catalog.
 # The sole purpose of this variable is to build a new binary if we ever need to build a new jx binary with a new go version with no code change.
 # If you notice that this version is not the same as the catalog version, please open a PR, the maintainers are happy to review it.
-DUMMY_GO_VERSION := 1.18.6
-
-GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
+DUMMY_GO_VERSION := 1.23
 
 GO := GO111MODULE=on go
 BUILD_TARGET = build
@@ -29,10 +27,7 @@ GOPRIVATE := github.com/jenkins-x/jx-helpers
 
 MAIN_SRC_FILE=./main.go
 
-BUILDFLAGS :=  -ldflags \
-  " -X main.buildTime=$(BUILD_DATE) \
-		-X main.gitCommit=$(REV) \
-		-X main.version=$(VERSION)"
+BUILDFLAGS :=
 
 REPORTS_DIR=bin
 
@@ -50,10 +45,6 @@ release: build test
 release: clean linux test
 
 release-all: release linux win darwin
-
-.PHONY: goreleaser
-goreleaser:
-	step-go-releaser --organisation=$(ORG) --revision=$(REV) --branch=$(BRANCH) --build-date=$(BUILD_DATE) --go-version=$(GO_VERSION) --root-package=$(ROOT_PACKAGE) --version=$(VERSION)
 
 fmt:
 	go fmt ./...

@@ -66,7 +66,7 @@ func TestJobLauncher(t *testing.T) {
 		client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector, runner.Run)
 		require.NoError(t, err, "failed to create launcher client")
 
-		o := launcher.LaunchOptions{
+		o := &launcher.LaunchOptions{
 			Repository: repo.Repository{
 				Name:      repoName,
 				Namespace: ns,
@@ -170,7 +170,7 @@ func TestOverlayJob(t *testing.T) {
 
 }
 
-func AssertEnvValue(t *testing.T, container *corev1.Container, envName string, expectedValue string, message string) {
+func AssertEnvValue(t *testing.T, container *corev1.Container, envName, expectedValue, message string) {
 	for _, e := range container.Env {
 		if e.Name == envName {
 			assert.Equal(t, expectedValue, e.Value, "envVar %s in container: %s for %s", envName, container.Name, message)
