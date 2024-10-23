@@ -5,7 +5,7 @@ go 1.23
 require (
 	dario.cat/mergo v1.0.1
 	github.com/google/uuid v1.6.0
-	github.com/jenkins-x/jx-helpers/v3 v3.8.1
+	github.com/jenkins-x/jx-helpers/v3 v3.8.0
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.8
 	github.com/jenkins-x/jx-logging/v3 v3.0.17
 	github.com/sethvargo/go-envconfig v0.3.5
