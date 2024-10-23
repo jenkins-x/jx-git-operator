@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-
+git config --global --add safe.directory /github/workspace
 echo "REPO_NAME = $PULL_BASE_SHA"
 
 export PULL_BASE_SHA=$(git rev-parse HEAD)
