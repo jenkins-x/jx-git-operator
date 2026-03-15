@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/strategicpatch"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
@@ -123,10 +125,10 @@ func TestJobLauncher(t *testing.T) {
 }
 
 func TestOverlayJob(t *testing.T) {
-	vsJob := &v1.Job{}
+	jsonMap := &strategicpatch.JSONMap{}
 
 	path := filepath.Join("test_data", "somerepo", "versionStream", "git-operator", "job.yaml")
-	err := yamls.LoadFile(path, vsJob)
+	err := yamls.LoadFile(path, jsonMap)
 	require.NoError(t, err, "failed to load file %s", path)
 
 	overlay := &v1.Job{
@@ -146,15 +148,35 @@ func TestOverlayJob(t *testing.T) {
 									Value: "MY_NEW_ENV_VALUE",
 								},
 							},
+							VolumeMounts: []corev1.VolumeMount{
+								{Name: "oci-secret", MountPath: "/root/.docker"},
+							},
 						},
+					},
+					Volumes: []corev1.Volume{{
+						Name: "oci-secret",
+						VolumeSource: corev1.VolumeSource{
+							Secret: &corev1.SecretVolumeSource{
+								SecretName: "oci",
+							},
+						}},
 					},
 				},
 			},
 		},
 	}
 
-	err = job.OverlayJob(vsJob, overlay)
+	converter := runtime.DefaultUnstructuredConverter
+	overLayMap, err := converter.ToUnstructured(&overlay)
+	require.NoError(t, err, "failed to convert overlay to map")
+
+	enriched, err := job.OverlayJob(jsonMap, (*strategicpatch.JSONMap)(&overLayMap))
+
 	require.NoError(t, err, "failed to apply overlay")
+
+	vsJob := &v1.Job{}
+	err = converter.FromUnstructuredWithValidation(enriched, vsJob, true)
+	require.NoError(t, err, "failed to convert unstructured to job")
 
 	containers := vsJob.Spec.Template.Spec.Containers
 	require.Len(t, containers, 1, "job should have 1 container")
@@ -165,9 +187,32 @@ func TestOverlayJob(t *testing.T) {
 
 	AssertEnvValue(t, container, "SOME_NAME", "SOME_NAME_NEW_VALUE", "job.container[0]")
 	AssertEnvValue(t, container, "MY_NEW_ENV", "MY_NEW_ENV_VALUE", "job.container[0]")
+	AssertVolumeMount(t, container, "oci-secret", "/root/.docker")
+	AssertVolume(t, &vsJob.Spec.Template.Spec, "oci-secret", "oci")
 
 	require.Len(t, env, 2, "container[0].Env")
 
+}
+
+func AssertVolumeMount(t *testing.T, container *corev1.Container, volumeName, expectedPath string) {
+	for _, vm := range container.VolumeMounts {
+		if vm.Name == volumeName {
+			assert.Equal(t, expectedPath, vm.MountPath)
+			return
+		}
+	}
+	assert.Fail(t, "missing volume mount %s in container %s", volumeName, container.Name)
+}
+
+func AssertVolume(t *testing.T, podSpec *corev1.PodSpec, volumeName, expectedSecret string) {
+	//nolint:gocritic
+	for _, vm := range podSpec.Volumes {
+		if vm.Name == volumeName {
+			assert.Equal(t, expectedSecret, vm.VolumeSource.Secret.SecretName)
+			return
+		}
+	}
+	assert.Fail(t, "missing volume %s", volumeName)
 }
 
 func AssertEnvValue(t *testing.T, container *corev1.Container, envName, expectedValue, message string) {
