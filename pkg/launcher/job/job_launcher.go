@@ -7,18 +7,17 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dario.cat/mergo"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-
 	"github.com/google/uuid"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/naming"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
+	"k8s.io/apimachinery/pkg/util/strategicpatch"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -174,15 +173,20 @@ func (c *client) startNewJob(ctx context.Context, opts *launcher.LaunchOptions, 
 		return nil, fmt.Errorf("repository %s does not have a Job file: %s", safeName, fileName)
 	}
 
-	resource := &v1.Job{}
-	err = yamls.LoadFile(fileName, resource)
+	jsonMap := &strategicpatch.JSONMap{}
+	err = yamls.LoadFile(fileName, jsonMap)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load Job file %s in repository %s: %w", fileName, safeName, err)
 	}
 
-	err = c.enrichJob(opts, resource, safeName)
+	enriched, err := c.enrichJob(opts, jsonMap, safeName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to enrich the Job: %w", err)
+	}
+	converter := runtime.DefaultUnstructuredConverter
+	resource := &v1.Job{}
+	if err := converter.FromUnstructuredWithValidation(enriched, resource, true); err != nil {
+		return nil, fmt.Errorf("failed to create job: %w", err)
 	}
 
 	if !opts.NoResourceApply {
@@ -254,83 +258,35 @@ func (c *client) startNewJob(ctx context.Context, opts *launcher.LaunchOptions, 
 	return []runtime.Object{r2}, nil
 }
 
-func (c *client) enrichJob(opts *launcher.LaunchOptions, job *v1.Job, safeName string) error {
+func (c *client) enrichJob(opts *launcher.LaunchOptions, job *strategicpatch.JSONMap, safeName string) (strategicpatch.JSONMap, error) {
 	path := filepath.Join(opts.Dir, ".jx", "git-operator", "job-overlay.yaml")
 	exists, err := files.FileExists(path)
 	if err != nil {
-		return fmt.Errorf("failed to check for file %s: %w", path, err)
+		return nil, fmt.Errorf("failed to check for file %s: %w", path, err)
 	}
 	if !exists {
-		return nil
+		return nil, nil
 	}
-	overlay := &v1.Job{}
+	overlay := &strategicpatch.JSONMap{}
 	err = yamls.LoadFile(path, overlay)
 	if err != nil {
-		return fmt.Errorf("failed to load Job file %s in repository %s: %w", path, safeName, err)
+		return nil, fmt.Errorf("failed to load Job file %s in repository %s: %w", path, safeName, err)
 	}
 
-	err = OverlayJob(job, overlay)
+	enriched, err := OverlayJob(job, overlay)
 	if err != nil {
-		return fmt.Errorf("failed to apply overlay from file %s to Job: %w", path, err)
+		return nil, fmt.Errorf("failed to apply overlay from file %s to Job: %w", path, err)
 	}
-	return nil
+	return enriched, nil
 }
 
 // OverlayJob applies the given overlay to the job
-func OverlayJob(job, overlay *v1.Job) error {
+func OverlayJob(job, overlay *strategicpatch.JSONMap) (strategicpatch.JSONMap, error) {
 	if overlay == nil {
-		return nil
+		return nil, nil
 	}
-	err := mergo.Merge(job, overlay)
-	if err != nil {
-		return fmt.Errorf("error merging Job with overlay: %w", err)
-	}
-
-	// mergeo can't handle container and env vars yet so lets help...
-	for i := range overlay.Spec.Template.Spec.Containers {
-		oc := &overlay.Spec.Template.Spec.Containers[i]
-
-		found := false
-		for j := range job.Spec.Template.Spec.Containers {
-			jc := &job.Spec.Template.Spec.Containers[j]
-			if jc.Name == oc.Name {
-				err = overlayJobContainer(jc, oc)
-				if err != nil {
-					return fmt.Errorf("failed to merge overlay job container %s: %w", oc.Name, err)
-				}
-				found = true
-				break
-			}
-		}
-		if !found {
-			return fmt.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
-		}
-	}
-	return nil
-}
-
-func overlayJobContainer(jc, oc *corev1.Container) error {
-	err := mergo.Merge(jc, oc)
-	if err != nil {
-		return fmt.Errorf("error merging Container with overlay: %w", err)
-	}
-	for i := range oc.Env {
-		oe := &oc.Env[i]
-
-		found := false
-		for j := range jc.Env {
-			je := &jc.Env[j]
-			if je.Name == oe.Name {
-				*je = *oe
-				found = true
-				break
-			}
-		}
-		if !found {
-			jc.Env = append(jc.Env, *oe)
-		}
-	}
-	return nil
+	schemaReferenceObj := v1.Job{}
+	return strategicpatch.StrategicMergeMapPatch(*job, *overlay, schemaReferenceObj)
 }
 
 func trimLength(text string, length int) string {
