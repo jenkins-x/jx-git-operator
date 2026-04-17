@@ -3,7 +3,7 @@ module github.com/jenkins-x/jx-git-operator
 go 1.23
 
 require (
-	dario.cat/mergo v1.0.1
+	dario.cat/mergo v1.0.2
 	github.com/google/uuid v1.6.0
 	github.com/jenkins-x/jx-helpers/v3 v3.8.0
 	github.com/jenkins-x/jx-kube-client/v3 v3.0.8
