@@ -1,7 +1,6 @@
 package poller
 
 import (
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +15,7 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient/cli"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
@@ -165,7 +165,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		return errors.Errorf("could not find latest commit sha for repository %s", name)
 	}
 
-	_, err = o.Launcher.Launch(launcher.LaunchOptions{
+	_, err = o.Launcher.Launch(&launcher.LaunchOptions{
 		Repository:            r,
 		GitSHA:                text,
 		LastCommitAuthor:      commitAuthor,

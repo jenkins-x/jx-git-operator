@@ -12,25 +12,25 @@ func TestAddGitURLUserPassword(t *testing.T) {
 	testCases := []struct {
 		url, username, password, expected string
 	}{
-		{
+		{ //nolint:gosec // test fixture
 			url:      "https://myuser:mypwd@gitub.com/some/repo.git",
 			username: "",
 			password: "",
 			expected: "https://myuser:mypwd@gitub.com/some/repo.git",
 		},
-		{
+		{ //nolint:gosec // test fixture
 			url:      "https://gitub.com/some/repo.git",
 			username: "myuser",
 			password: "mypwd",
 			expected: "https://myuser:mypwd@gitub.com/some/repo.git",
 		},
-		{
+		{ //nolint:gosec // test fixture
 			url:      "https://myuser:mypwd@gitub.com/some/repo.git",
 			username: "anotheruser",
 			password: "anotherpwd",
 			expected: "https://anotheruser:anotherpwd@gitub.com/some/repo.git",
 		},
-		{
+		{ //nolint:gosec // test fixture
 			url:      "https://myuser:mypwd@gitub.com/some/repo.git",
 			password: "anotherpwd",
 			expected: "https://myuser:anotherpwd@gitub.com/some/repo.git",

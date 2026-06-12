@@ -39,5 +39,5 @@ type LaunchOptions struct {
 type Interface interface {
 	// Launch launches a new Job/Task/Pipeline for the given repository if there has been a git commit
 	// since the last
-	Launch(opts LaunchOptions) ([]runtime.Object, error)
+	Launch(opts *LaunchOptions) ([]runtime.Object, error)
 }

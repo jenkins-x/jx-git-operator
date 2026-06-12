@@ -7,7 +7,7 @@ import (
 )
 
 // AddGitURLUserPassword combines the optional username and password to make a git url for cloning git
-func AddGitURLUserPassword(rawurl string, username string, password string) (string, error) {
+func AddGitURLUserPassword(rawurl, username, password string) (string, error) {
 	if username == "" && password == "" {
 		return rawurl, nil
 	}

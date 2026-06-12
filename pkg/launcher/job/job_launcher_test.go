@@ -1,7 +1,6 @@
 package job_test
 
 import (
-	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/testhelpers"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/batch/v1"
@@ -24,7 +24,7 @@ import (
 func TestJobLauncher(t *testing.T) {
 	ns := "jx"
 	repoName := "fake-repository"
-	gitURL := "https://fakeuser:fakepwd@github.com/jenkins-x/fake-repository.git"
+	gitURL := "https://fakeuser:fakepwd@github.com/jenkins-x/fake-repository.git" //nolint:gosec // test fixture
 	gitSha := "dummysha1234"
 	lastCommitAuthor := "jstrachan"
 	lastCommitAuthorEmail := "something@gmail.com"
@@ -65,7 +65,7 @@ func TestJobLauncher(t *testing.T) {
 		client, err := job.NewLauncher(kubeClient, ns, constants.DefaultSelector, runner.Run)
 		require.NoError(t, err, "failed to create launcher client")
 
-		o := launcher.LaunchOptions{
+		o := &launcher.LaunchOptions{
 			Repository: repo.Repository{
 				Name:      repoName,
 				Namespace: ns,
@@ -169,7 +169,7 @@ func TestOverlayJob(t *testing.T) {
 
 }
 
-func AssertEnvValue(t *testing.T, container *corev1.Container, envName string, expectedValue string, message string) {
+func AssertEnvValue(t *testing.T, container *corev1.Container, envName, expectedValue, message string) {
 	for _, e := range container.Env {
 		if e.Name == envName {
 			assert.Equal(t, expectedValue, e.Value, "envVar %s in container: %s for %s", envName, container.Name, message)

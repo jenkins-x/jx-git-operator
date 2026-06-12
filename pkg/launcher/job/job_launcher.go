@@ -3,28 +3,27 @@ package job
 import (
 	"context"
 	"fmt"
-	"github.com/imdario/mergo"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/imdario/mergo"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/naming"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-
 	v1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	v12 "k8s.io/client-go/kubernetes/typed/batch/v1"
 )
@@ -38,7 +37,7 @@ type client struct {
 
 // NewLauncher creates a new launcher for Jobs using the given kubernetes client and namespace
 // if nil is passed in the kubernetes client will be lazily created
-func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string, runner cmdrunner.CommandRunner) (launcher.Interface, error) {
+func NewLauncher(kubeClient kubernetes.Interface, ns, selector string, runner cmdrunner.CommandRunner) (launcher.Interface, error) {
 	if kubeClient == nil {
 		f := kubeclient.NewFactory()
 		cfg, err := f.CreateKubeConfig()
@@ -70,7 +69,7 @@ func NewLauncher(kubeClient kubernetes.Interface, ns string, selector string, ru
 }
 
 // Launch launches a job for the given commit
-func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
+func (c *client) Launch(opts *launcher.LaunchOptions) ([]runtime.Object, error) {
 	ctx := context.Background()
 	ns := opts.Repository.Namespace
 	if ns == "" {
@@ -96,16 +95,17 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 
 	var jobsForSha []v1.Job
 	var activeJobs []v1.Job
-	for _, r := range list.Items {
+	for i := range list.Items {
+		r := &list.Items[i]
 		log.Logger().Infof("found Job %s", r.Name)
 
 		if r.Labels[launcher.CommitShaLabelKey] == safeSha && r.Labels[launcher.RerunLabelKey] != "true" {
-			jobsForSha = append(jobsForSha, r)
+			jobsForSha = append(jobsForSha, *r)
 		}
 
 		// is the job active
 		if IsJobActive(r) {
-			activeJobs = append(activeJobs, r)
+			activeJobs = append(activeJobs, *r)
 		}
 	}
 
@@ -120,12 +120,12 @@ func (c *client) Launch(opts launcher.LaunchOptions) ([]runtime.Object, error) {
 }
 
 // IsJobActive returns true if the job has not completed or terminated yet
-func IsJobActive(r v1.Job) bool {
+func IsJobActive(r *v1.Job) bool {
 	return r.Status.Succeeded == 0 && r.Status.Failed == 0
 }
 
 // startNewJob lets create a new Job resource
-func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, jobInterface v12.JobInterface, ns string, safeName string, safeSha, safeGitURL string) ([]runtime.Object, error) {
+func (c *client) startNewJob(ctx context.Context, opts *launcher.LaunchOptions, jobInterface v12.JobInterface, ns, safeName, safeSha, safeGitURL string) ([]runtime.Object, error) {
 	log.Logger().Infof("about to create a new job for name %s and sha %s", safeName, safeSha)
 
 	// lets see if we are using a version stream to store the git operator configuration
@@ -247,7 +247,7 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 	return []runtime.Object{r2}, nil
 }
 
-func (c *client) enrichJob(ctx context.Context, opts launcher.LaunchOptions, job *v1.Job, safeName string) error {
+func (c *client) enrichJob(_ context.Context, opts *launcher.LaunchOptions, job *v1.Job, safeName string) error {
 	path := filepath.Join(opts.Dir, ".jx", "git-operator", "job-overlay.yaml")
 	exists, err := files.FileExists(path)
 	if err != nil {
@@ -270,7 +270,7 @@ func (c *client) enrichJob(ctx context.Context, opts launcher.LaunchOptions, job
 }
 
 // OverlayJob applies the given overlay to the job
-func OverlayJob(job *v1.Job, overlay *v1.Job) error {
+func OverlayJob(job, overlay *v1.Job) error {
 	if overlay == nil {
 		return nil
 	}
@@ -302,7 +302,7 @@ func OverlayJob(job *v1.Job, overlay *v1.Job) error {
 	return nil
 }
 
-func overlayJobContainer(jc *corev1.Container, oc *corev1.Container) error {
+func overlayJobContainer(jc, oc *corev1.Container) error {
 	err := mergo.Merge(jc, oc)
 	if err != nil {
 		return errors.Wrap(err, "error merging Container with overlay")

@@ -20,7 +20,7 @@ type client struct {
 
 // NewClient creates a new client using the given kubernetes client and namespace
 // if nil is passed in the kubernetes client will be lazily created
-func NewClient(kubeClient kubernetes.Interface, ns string, selector string) (repo.Interface, error) {
+func NewClient(kubeClient kubernetes.Interface, ns, selector string) (repo.Interface, error) {
 	if kubeClient == nil {
 		f := kubeclient.NewFactory()
 		cfg, err := f.CreateKubeConfig()
@@ -60,8 +60,8 @@ func (c *client) List() ([]repo.Repository, error) {
 	}
 
 	var answer []repo.Repository
-	for _, s := range list.Items {
-		r, err := c.toRepository(&s)
+	for i := range list.Items {
+		r, err := c.toRepository(&list.Items[i])
 		if err != nil {
 			return answer, errors.Wrapf(err, "failed to create repo.Repository")
 		}
