@@ -24,10 +24,7 @@ GOPRIVATE := github.com/jenkins-x/jx-helpers
 
 MAIN_SRC_FILE=./main.go
 
-BUILDFLAGS :=  -ldflags \
-  " -X main.buildTime=$(BUILD_DATE) \
-		-X main.gitCommit=$(REV) \
-		-X main.version=$(VERSION)"
+BUILDFLAGS :=
 
 REPORTS_DIR=bin
 
@@ -45,10 +42,6 @@ release: build test
 release: clean linux test
 
 release-all: release linux win darwin
-
-.PHONY: goreleaser
-goreleaser:
-	step-go-releaser --organisation=$(ORG) --revision=$(REV) --branch=$(BRANCH) --build-date=$(BUILD_DATE) --go-version=$(GO_VERSION) --root-package=$(ROOT_PACKAGE) --version=$(VERSION)
 
 fmt:
 	go fmt ./...
@@ -97,8 +90,11 @@ errors:
 lint2:
 	golint ./...
 
-lint:
-	golangci-lint run
+.PHONY: lint
+lint: ## Lint the code
+	./hack/gofmt.sh
+	./hack/linter.sh
+	./hack/generate.sh
 
 imports:
 	goimports -l -w .

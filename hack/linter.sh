@@ -7,40 +7,12 @@ then
   exit 0
 fi
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+linterVersion="$(golangci-lint --version | awk '{print $4}')"
 
-if ! [ -x "$(command -v golangci-lint)" ]; then
-	echo "Installing GolangCI-Lint"
-	${DIR}/install_golint.sh -b $GOPATH/bin v1.20.0
+if [[ ! "${linterVersion}" =~ ^1\.5[89] ]]; then
+	echo "Install GolangCI-Lint version 1.58 or 1.59"
+  exit 1
 fi
 
 export GO111MODULE=on
-golangci-lint run \
-	--no-config \
-  --disable-all \
-  -E golint \
-  -E varcheck \
-  -E errcheck \
-	-E misspell \
-	-E unconvert \
-  -E deadcode \
-  -E unconvert \
-  -E gosec \
-  -E gofmt \
-  -E goimports \
-  -E structcheck \
-  -E interfacer \
-  -E govet \
-  -E unparam \
-  -E megacheck \
-  -E goconst \
-  -E ineffassign \
-  -E unparam \
-  -E gocritic \
-  -E maligned \
-  -E typecheck \
-  --skip-dirs vendor \
-  --deadline 15m0s \
-  --verbose \
-  --build-tags build
-
+golangci-lint run --verbose --build-tags build

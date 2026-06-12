@@ -1,4 +1,4 @@
-FROM ubuntu:20.10
+FROM ubuntu:20.04
 
 ARG BUILD_DATE
 ARG VERSION
@@ -9,12 +9,12 @@ ARG TARGETOS
 LABEL maintainer="jenkins-x"
 
 # kubectl
-ENV KUBECTL_VERSION 1.16.15
+ENV KUBECTL_VERSION 1.25.13
 
 # see https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope
 RUN echo using kubectl version ${KUBECTL_VERSION} and OS ${TARGETOS} arch ${TARGETARCH} && \
   apt-get update && apt-get -y install curl ca-certificates git netcat-openbsd && \
-  curl -LO  https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl && \
+  curl -LO  https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/${TARGETOS}/${TARGETARCH}/kubectl && \
   mv kubectl /usr/bin/kubectl && \
   chmod +x /usr/bin/kubectl
 
