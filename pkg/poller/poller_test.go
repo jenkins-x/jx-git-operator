@@ -2,7 +2,6 @@ package poller_test
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -35,7 +34,7 @@ func TestPoller(t *testing.T) {
 	resourcesDir, err := filepath.Abs(filepath.Join("test_data", "somerepo", ".jx", "git-operator", "resources"))
 	require.NoError(t, err, "failed to get absolute dir %s", resourcesDir)
 
-	tmpDir, err := ioutil.TempDir("", "test-jx-git-operator-")
+	tmpDir, err := os.MkdirTemp("", "test-jx-git-operator-")
 	require.NoError(t, err, "failed to create temp dir")
 
 	t.Logf("running in dir %s", tmpDir)

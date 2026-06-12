@@ -2,7 +2,7 @@ package poller
 
 import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -126,6 +126,9 @@ func (o *Options) pollRepository(r repo.Repository) error {
 	} else {
 		if o.Branch == "" {
 			o.Branch, err = gitclient.Branch(o.GitClient, dir)
+			if err != nil {
+				return errors.Wrapf(err, "failed to find the default branch for repository %s", name)
+			}
 			o.Branch = strings.TrimSpace(o.Branch)
 			log.Logger().Infof("using main branch: %s", termcolor.ColorInfo(o.Branch))
 		}
@@ -203,7 +206,7 @@ func (o *Options) ValidateOptions() error {
 		}
 	}
 	if o.Dir == "" {
-		o.Dir, err = ioutil.TempDir("", "jx-git-operator-")
+		o.Dir, err = os.MkdirTemp("", "jx-git-operator-")
 		if err != nil {
 			return errors.Wrapf(err, "failed to create temp dir")
 		}

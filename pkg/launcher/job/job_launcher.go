@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/imdario/mergo"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -148,7 +147,7 @@ func (c *client) startNewJob(ctx context.Context, opts launcher.LaunchOptions, j
 			return nil, errors.Wrapf(err, "failed to check for file %s", fileNamePath)
 		}
 		if exists {
-			data, err := ioutil.ReadFile(fileNamePath)
+			data, err := os.ReadFile(fileNamePath)
 			if err != nil {
 				return nil, errors.Wrapf(err, "failed to load file %s", fileNamePath)
 			}
@@ -297,7 +296,7 @@ func OverlayJob(job *v1.Job, overlay *v1.Job) error {
 			}
 		}
 		if !found {
-			errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
+			return errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
 		}
 	}
 	return nil
