@@ -6,8 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
-
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"

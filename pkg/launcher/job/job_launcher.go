@@ -7,9 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"dario.cat/mergo"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-
 	"github.com/google/uuid"
 	"github.com/imdario/mergo"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
@@ -21,7 +18,6 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-	"github.com/pkg/errors"
 	v1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -250,7 +246,7 @@ func (c *client) startNewJob(ctx context.Context, opts *launcher.LaunchOptions, 
 	return []runtime.Object{r2}, nil
 }
 
-func (c *client) enrichJob(_ context.Context, opts *launcher.LaunchOptions, job *v1.Job, safeName string) error {
+func (c *client) enrichJob(opts *launcher.LaunchOptions, job *v1.Job, safeName string) error {
 	path := filepath.Join(opts.Dir, ".jx", "git-operator", "job-overlay.yaml")
 	exists, err := files.FileExists(path)
 	if err != nil {
@@ -299,7 +295,7 @@ func OverlayJob(job, overlay *v1.Job) error {
 			}
 		}
 		if !found {
-			return errors.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
+			return fmt.Errorf("could not find container called %s in the Job definition from the overlay", oc.Name)
 		}
 	}
 	return nil

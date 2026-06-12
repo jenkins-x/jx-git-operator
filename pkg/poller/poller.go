@@ -1,12 +1,11 @@
 package poller
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
@@ -20,7 +19,6 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -129,7 +127,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		if o.Branch == "" {
 			o.Branch, err = gitclient.Branch(o.GitClient, dir)
 			if err != nil {
-				return errors.Wrapf(err, "failed to find the default branch for repository %s", name)
+				return fmt.Errorf("failed to find the default branch for repository %s: %w", name, err)
 			}
 			o.Branch = strings.TrimSpace(o.Branch)
 			log.Logger().Infof("using main branch: %s", termcolor.ColorInfo(o.Branch))
