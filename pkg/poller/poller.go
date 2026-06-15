@@ -127,7 +127,7 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		if o.Branch == "" {
 			o.Branch, err = gitclient.Branch(o.GitClient, dir)
 			if err != nil {
-				return fmt.Errorf("failed to find the default branch for repository %s: %w", name, err)
+				log.Logger().Warnf("failed to get the current branch %s\n", err.Error())
 			}
 			o.Branch = strings.TrimSpace(o.Branch)
 			log.Logger().Infof("using main branch: %s", termcolor.ColorInfo(o.Branch))

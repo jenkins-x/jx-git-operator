@@ -8,8 +8,11 @@ REV := $(shell git rev-parse --short HEAD 2> /dev/null || echo 'unknown')
 ROOT_PACKAGE := github.com/$(ORG_REPO)
 BRANCH     := $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null  || echo 'unknown')
 BUILD_DATE := $(shell date +%Y%m%d-%H:%M:%S)
-#GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
-GO_VERSION := 1.26.3
+# This version is just used to trigger a new build in case we update the version of go in jx3-pipeline-catalog, and dont have new PRs which use the updated version in the catalog.
+# This does not reflect the go binary version which was used to build the jx binary, and also does not reflect the version in the catalog.
+# The sole purpose of this variable is to build a new binary if we ever need to build a new jx binary with a new go version with no code change.
+# If you notice that this version is not the same as the catalog version, please open a PR, the maintainers are happy to review it.
+DUMMY_GO_VERSION := 1.26.3
 
 GO := GO111MODULE=on go
 BUILD_TARGET = build
