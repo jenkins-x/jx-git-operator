@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"dario.cat/mergo"
 	"github.com/google/uuid"
-	"github.com/imdario/mergo"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
