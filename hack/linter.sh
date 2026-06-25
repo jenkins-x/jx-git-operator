@@ -2,15 +2,15 @@
 
 set -e -o pipefail
 
-if [ "$DISABLE_LINTER" == "true" ]
+if [[ "$DISABLE_LINTER" == "true" ]]
 then
   exit 0
 fi
 
 linterVersion="$(golangci-lint --version | awk '{print $4}')"
 
-if [[ ! "${linterVersion}" =~ ^1\.5[89] ]]; then
-	echo "Install GolangCI-Lint version 1.58 or 1.59"
+if [[ ! "${linterVersion}" =~ ^2\. ]]; then
+	echo "Install GolangCI-Lint version 2.x (found: ${linterVersion})"
   exit 1
 fi
 

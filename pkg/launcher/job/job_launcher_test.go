@@ -6,14 +6,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
-
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"
 	"github.com/jenkins-x/jx-git-operator/pkg/repo"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner/fakerunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/testhelpers"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/batch/v1"
@@ -25,7 +24,7 @@ import (
 func TestJobLauncher(t *testing.T) {
 	ns := "jx"
 	repoName := "fake-repository"
-	gitURL := "https://fakeuser:fakepwd@github.com/jenkins-x/fake-repository.git"
+	gitURL := "https://fakeuser:fakepwd@github.com/jenkins-x/fake-repository.git" //nolint:gosec // test fixture
 	gitSha := "dummysha1234"
 	lastCommitAuthor := "jstrachan"
 	lastCommitAuthorEmail := "something@gmail.com"

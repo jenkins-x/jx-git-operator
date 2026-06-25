@@ -114,8 +114,7 @@ func TestPoller(t *testing.T) {
 	}
 }
 
-//nolint:unparam
-func assertHasJobCountForRepoAndSha(ctx context.Context, t *testing.T, kubeClient kubernetes.Interface, ns, repoName, sha string, expectedCount int) []v1.Job {
+func assertHasJobCountForRepoAndSha(ctx context.Context, t *testing.T, kubeClient kubernetes.Interface, ns, repoName, sha string, expectedCount int) []v1.Job { //nolint:unparam // ns is parameterized for future use
 	selector := constants.DefaultSelectorKey
 	jobs, err := kubeClient.BatchV1().Jobs(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: selector,
@@ -125,7 +124,7 @@ func assertHasJobCountForRepoAndSha(ctx context.Context, t *testing.T, kubeClien
 
 	count := 0
 	for i := range jobs.Items {
-		j := jobs.Items[i]
+		j := &jobs.Items[i]
 		name := j.Name
 		labels := j.Labels
 		if labels == nil {

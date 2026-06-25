@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher/job"
@@ -18,9 +16,9 @@ import (
 	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/gitclient/cli"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/termcolor"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -129,7 +127,6 @@ func (o *Options) pollRepository(r repo.Repository) error {
 		if o.Branch == "" {
 			o.Branch, err = gitclient.Branch(o.GitClient, dir)
 			if err != nil {
-				//TODO: Evaluate if we should return instead of logging the error
 				log.Logger().Warnf("failed to get the current branch %s\n", err.Error())
 			}
 			o.Branch = strings.TrimSpace(o.Branch)

@@ -8,24 +8,21 @@ import (
 	"strings"
 
 	"dario.cat/mergo"
-	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
-
 	"github.com/google/uuid"
 	"github.com/jenkins-x/jx-git-operator/pkg/constants"
 	"github.com/jenkins-x/jx-git-operator/pkg/launcher"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/cmdrunner"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/files"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/kube/naming"
+	"github.com/jenkins-x/jx-helpers/v3/pkg/stringhelpers"
 	"github.com/jenkins-x/jx-helpers/v3/pkg/yamls"
 	"github.com/jenkins-x/jx-kube-client/v3/pkg/kubeclient"
 	"github.com/jenkins-x/jx-logging/v3/pkg/log"
-
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-
 	v1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	v12 "k8s.io/client-go/kubernetes/typed/batch/v1"
 )
@@ -98,16 +95,16 @@ func (c *client) Launch(opts *launcher.LaunchOptions) ([]runtime.Object, error) 
 	var jobsForSha []v1.Job
 	var activeJobs []v1.Job
 	for i := range list.Items {
-		r := list.Items[i]
+		r := &list.Items[i]
 		log.Logger().Infof("found Job %s", r.Name)
 
 		if r.Labels[launcher.CommitShaLabelKey] == safeSha && r.Labels[launcher.RerunLabelKey] != "true" {
-			jobsForSha = append(jobsForSha, r)
+			jobsForSha = append(jobsForSha, *r)
 		}
 
 		// is the job active
-		if IsJobActive(&r) {
-			activeJobs = append(activeJobs, r)
+		if IsJobActive(r) {
+			activeJobs = append(activeJobs, *r)
 		}
 	}
 

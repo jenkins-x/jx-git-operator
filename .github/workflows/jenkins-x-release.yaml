@@ -22,7 +22,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
         VERSION: ${{ steps.prep.outputs.version }}
       name: release-binary
-      uses: docker://golang:1.23.2@sha256:a7f2fc9834049c1f5df787690026a53738e55fc097cd8a4a93faa3e06c67ee32
+      uses: docker://golang:1.26.3@sha256:2981696eed011d747340d7252620932677929cce7d2d539602f56a8d7e9b660b
       with:
         args: -c "make release"
         entrypoint: bash
@@ -48,7 +48,7 @@ jobs:
         REPOSITORY: ${{ github.repository }}
         VERSION: ${{ steps.prep.outputs.version }}
       name: upload-binaries
-      uses: docker://ghcr.io/jenkins-x/jx-goreleaser-image:1.0.0@sha256:35070795367fea9a789c1c3a138b5e32262e4253d38e47406ba9ab7833ff15b2
+      uses: docker://ghcr.io/jenkins-x/jx-goreleaser-image:1.0.3@sha256:f304b286bf8c0995b8161172eb54ab12bcd744f89caf71fc3a91329de87a3b4f
       with:
         entrypoint: .github/workflows/jenkins-x/upload-binaries.sh
     - name: Set up QEMU

@@ -62,8 +62,7 @@ func (c *client) List() ([]repo.Repository, error) {
 
 	var answer []repo.Repository
 	for i := range list.Items {
-		s := list.Items[i]
-		r, err := c.toRepository(&s)
+		r, err := c.toRepository(&list.Items[i])
 		if err != nil {
 			return answer, fmt.Errorf("failed to create repo.Repository: %w", err)
 		}
