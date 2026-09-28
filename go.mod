@@ -10,9 +10,9 @@ require (
 	github.com/jenkins-x/jx-logging/v3 v3.1.6
 	github.com/sethvargo/go-envconfig v1.4.3
 	github.com/stretchr/testify v1.11.1
-	k8s.io/api v0.37.0
-	k8s.io/apimachinery v0.37.0
-	k8s.io/client-go v0.37.0
+	k8s.io/api v0.37.1
+	k8s.io/apimachinery v0.37.1
+	k8s.io/client-go v0.37.1
 )
 
 require (
